@@ -17,6 +17,7 @@ class Metadata:
 
 @dataclass
 class Track:
+    index: int
     path: str
     title: str
     artist: list[str]
@@ -32,6 +33,7 @@ class Track:
         if isinstance(lyrics, str):
             lyrics = json.loads(lyrics) if lyrics else []
         return cls(
+            index=data["index"],
             path=data["path"],
             title=data["title"],
             artist=data["artist"],
@@ -57,7 +59,7 @@ class PlaybackStatus:
 @dataclass
 class Playlist:
     tracks: list[Track]
-    current_index: int = -1
+    current_index: int = 0
 
     @property
     def current(self) -> Track | None:

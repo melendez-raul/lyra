@@ -108,7 +108,6 @@ class Library:
                 metadata[tag_name] = self._parse_lyrics(value)
             else:
                 metadata[tag_name] = value.strip()
-
         return Metadata(
             path=str(path),
             cover_path=str(cover_path) if cover_path else None,
@@ -234,10 +233,7 @@ class Library:
                     for name in metadata.album_artist
                 ]
                 album_id = self._get_or_create_album(
-                    cursor,
-                    metadata.album,
-                    metadata.cover_path,
-                    album_artist_ids,
+                    cursor, metadata.album, metadata.cover_path, album_artist_ids
                 )
                 cursor.execute(
                     """
@@ -304,13 +300,13 @@ class Library:
                 """
             ).fetchall()
             tracks = []
-            for row in rows:
+            for i, row in enumerate(rows):
                 data = dict(row)
+                data["index"] = i
                 data["artist"] = json.loads(data["artist"] or "[]")
                 data["album_artist"] = json.loads(data["album_artist"] or "[]")
                 tracks.append(Track.from_dict(data))
             return tracks
-
         except (sql.Error, ValueError, TypeError) as error:
             raise LibraryError from error
         finally:
