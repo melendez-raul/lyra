@@ -1,11 +1,30 @@
 import json
+import logging
 import re
+import shutil
 import sqlite3 as sql
 from pathlib import Path
 
-from mutagen.flac import FLAC
+from mutagen import MutagenError
+from mutagen.flac import FLAC, Picture
 
 from .models import Metadata, Track
+
+logger = logging.getLogger(__name__)
+
+UNKNOWN_ARTIST = "No Artist"
+UNKNOWN_ALBUM = "Unknown"
+
+_INVALID_CHARS = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
+_RESERVED_NAMES = {
+    "CON",
+    "PRN",
+    "AUX",
+    "NUL",
+    *(f"COM{i}" for i in range(1, 10)),
+    *(f"LPT{i}" for i in range(1, 10)),
+}
+_MAX_NAME_LENGTH = 120
 
 
 class LibraryError(Exception):
@@ -16,14 +35,6 @@ class Library:
     def __init__(self, directory: Path) -> None:
         self.music_dir = directory
         self.url = self.music_dir / "library.db"
-        self.metadata_tags = [
-            "TITLE",
-            "ARTIST",
-            "ALBUM",
-            "ALBUMARTIST",
-            "TRACKNUMBER",
-            "LYRICS",
-        ]
         self.supported_extensions = {".flac"}
         self._create()
 
@@ -81,43 +92,60 @@ class Library:
     def _delete(self) -> None:
         self.url.unlink()
 
-    def _get_metadata(self, path: Path) -> Metadata | None:
+    # ------------------------------------------------------------------
+    # Lectura de metadata
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _get_tag(audio: FLAC, name: str) -> str | None:
+        values = audio.get(name)
+        if not values:
+            return None
+        value = values[0].strip()
+        return value or None
+
+    @staticmethod
+    def _split_names(value: str | None) -> list[str]:
+        if not value:
+            return []
+        names = [part.strip() for part in value.split(";")]
+        return list(dict.fromkeys(name for name in names if name))
+
+    @staticmethod
+    def _parse_track_number(value: str | None) -> int | None:
+        if not value:
+            return None
+        match = re.match(r"\s*(\d+)", value)
+        return int(match.group(1)) if match else None
+
+    def _get_metadata(self, path: Path) -> tuple[Metadata, Picture | None] | None:
         if path.suffix.lower() not in self.supported_extensions:
             return None
         audio = FLAC(path)
-        cover_path = None
         if audio.get("COMMENT"):
             audio.pop("COMMENT")
             audio.save()
-        if audio.pictures:
-            image = audio.pictures[0]
-            cover_path = path.with_suffix(".jpg")
-            cover_path.write_bytes(image.data)
-        metadata = {}
-        for tag_name in self.metadata_tags:
-            tag = audio.get(tag_name)
-            if not tag:
-                metadata[tag_name] = None
-                continue
-            value = tag[0]
-            if tag_name in ("ARTIST", "ALBUMARTIST"):
-                metadata[tag_name] = [artist.strip() for artist in value.split(";")]
-            elif tag_name == "TRACKNUMBER":
-                metadata[tag_name] = int(value.split("/")[0].strip())
-            elif tag_name == "LYRICS":
-                metadata[tag_name] = self._parse_lyrics(value)
-            else:
-                metadata[tag_name] = value.strip()
-        return Metadata(
+        picture = audio.pictures[0] if audio.pictures else None
+
+        title = self._get_tag(audio, "TITLE") or path.stem
+        album = self._get_tag(audio, "ALBUM") or UNKNOWN_ALBUM
+        artist = self._split_names(self._get_tag(audio, "ARTIST"))
+        album_artist = self._split_names(self._get_tag(audio, "ALBUMARTIST"))
+        album_artist = album_artist or artist or [UNKNOWN_ARTIST]
+        artist = artist or album_artist
+        raw_lyrics = self._get_tag(audio, "LYRICS")
+
+        metadata = Metadata(
             path=str(path),
-            cover_path=str(cover_path) if cover_path else None,
-            title=metadata["TITLE"],
-            artist=metadata["ARTIST"] or [],
-            album=metadata["ALBUM"],
-            album_artist=metadata["ALBUMARTIST"] or [],
-            track_number=metadata["TRACKNUMBER"],
-            lyrics=metadata["LYRICS"],
+            cover_path=None,
+            title=title,
+            artist=artist,
+            album=album,
+            album_artist=album_artist,
+            track_number=self._parse_track_number(self._get_tag(audio, "TRACKNUMBER")),  # pyright: ignore[reportArgumentType]
+            lyrics=self._parse_lyrics(raw_lyrics) if raw_lyrics else None,
         )
+        return metadata, picture
 
     @staticmethod
     def _parse_lyrics(raw: str) -> str:
@@ -136,6 +164,10 @@ class Library:
                 timestamp += int(fraction) / (10 ** len(fraction))
             lyrics.append({"time": timestamp, "text": text})
         return json.dumps(lyrics, ensure_ascii=False, indent=4)
+
+    # ------------------------------------------------------------------
+    # Base de datos
+    # ------------------------------------------------------------------
 
     def _get_or_create_artist(self, cursor: sql.Cursor, name: str) -> int:
         cursor.execute(
@@ -313,43 +345,80 @@ class Library:
             if connection is not None:
                 connection.close()
 
+    # ------------------------------------------------------------------
+    # Organización de archivos
+    # ------------------------------------------------------------------
+
     def process(self) -> None:
-        paths = [
+        paths = sorted(
             path
             for path in self.music_dir.rglob("*")
             if path.suffix.lower() in self.supported_extensions
-        ]
+        )
         for path in paths:
-            metadata = self._get_metadata(path)
-            if metadata is None:
-                continue
-            album_directory = self._create_album_dir(
-                metadata.album_artist, metadata.album
-            )
-            metadata.path = self._move_and_rename(
-                metadata.path, album_directory, metadata.title, ".flac"
-            )
-            if metadata.cover_path is not None:
-                metadata.cover_path = self._move_and_rename(
-                    metadata.cover_path, album_directory, "cover", ".jpg"
-                )
-            self.insert(metadata)
+            try:
+                self._process_file(path)
+            except (OSError, ValueError, MutagenError, LibraryError) as error:
+                logger.warning("Omitido %s: %s", path, error)
+
+    def _process_file(self, path: Path) -> None:
+        result = self._get_metadata(path)
+        if result is None:
+            return
+        metadata, picture = result
+        album_directory = self._create_album_dir(metadata.album_artist, metadata.album)
+        metadata.path = self._move_and_rename(
+            path, album_directory, metadata.title, ".flac"
+        )
+        if picture is not None:
+            metadata.cover_path = self._save_cover(picture, album_directory)
+        self.insert(metadata)
+
+    @staticmethod
+    def _safe_name(name: str) -> str:
+        name = _INVALID_CHARS.sub("_", name).strip()[:_MAX_NAME_LENGTH]
+        name = name.strip().rstrip(". ")
+        if not name:
+            return "_"
+        if name.split(".")[0].upper() in _RESERVED_NAMES:
+            name = f"_{name}"
+        return name
 
     def _create_album_dir(self, album_artist: list[str], album: str) -> Path:
-        album_artists = ", ".join(album_artist)
-        album_artist_dir = self.music_dir / album_artists
-        album_artist_dir.mkdir(parents=True, exist_ok=True)
-        album_dir = album_artist_dir / album
+        artist_name = ", ".join(album_artist) or UNKNOWN_ARTIST
+        album_dir = (
+            self.music_dir / self._safe_name(artist_name) / self._safe_name(album)
+        )
         album_dir.mkdir(parents=True, exist_ok=True)
         return album_dir
 
     @staticmethod
-    def _move_and_rename(path: str, to_dir: Path, name: str, ext: str) -> str:
-        new_path = Path(path).rename((to_dir / name).with_suffix(ext))
-        return str(new_path)
+    def _unique_path(directory: Path, name: str, ext: str, source: Path) -> Path:
+        candidate = directory / f"{name}{ext}"
+        counter = 2
+        while candidate.exists() and not candidate.samefile(source):
+            candidate = directory / f"{name} ({counter}){ext}"
+            counter += 1
+        return candidate
+
+    @classmethod
+    def _move_and_rename(cls, source: Path, to_dir: Path, name: str, ext: str) -> str:
+        destination = cls._unique_path(to_dir, cls._safe_name(name), ext, source)
+        if not destination.exists():
+            shutil.move(source, destination)
+        return str(destination)
+
+    @staticmethod
+    def _save_cover(picture: Picture, album_dir: Path) -> str:
+        extension = ".png" if picture.mime == "image/png" else ".jpg"
+        cover = album_dir / f"cover{extension}"
+        if not cover.exists():
+            cover.write_bytes(picture.data)
+        return str(cover)
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     music_directory = Path.home() / "Música"
     library = Library(music_directory)
     library.process()
