@@ -1,4 +1,5 @@
 import json
+import re
 from dataclasses import dataclass
 from typing import Literal
 
@@ -84,3 +85,54 @@ class Playlist:
             return None
         self.current_index -= 1
         return self.current
+
+
+@dataclass
+class Theme:
+    transparency: int = 85
+    app_background: str = "rgb(9, 9, 15)"
+    content_surface: str = "rgb(20, 20, 31)"
+    player_surface: str = "rgb(16, 16, 25)"
+    surface: str = "rgb(30, 30, 43)"
+    surface_hover: str = "rgb(41, 41, 58)"
+    border_subtle: str = "rgb(52, 52, 73)"
+    title_color: str = "rgb(255, 255, 255)"
+    text_primary: str = "rgb(244, 241, 250)"
+    text_secondary: str = "rgb(181, 177, 197)"
+    text_muted: str = "rgb(129, 125, 148)"
+    text_inactive: str = "rgb(91, 88, 107)"
+    accent_primary: str = "rgb(139, 92, 246)"
+    accent_secondary: str = "rgb(167, 139, 250)"
+    accent_tertiary: str = "rgb(109, 40, 217)"
+
+    def to_dict(self) -> dict[str, str | int]:
+        return {
+            "transparency": self.transparency,
+            "app_background": self.app_background,
+            "content_surface": self.content_surface,
+            "player_surface": self.player_surface,
+            "surface": self.surface,
+            "surface_hover": self.surface_hover,
+            "border_subtle": self.border_subtle,
+            "title_color": self.title_color,
+            "text_primary": self.text_primary,
+            "text_secondary": self.text_secondary,
+            "text_muted": self.text_muted,
+            "text_inactive": self.text_inactive,
+            "accent_primary": self.accent_primary,
+            "accent_secondary": self.accent_secondary,
+            "accent_tertiary": self.accent_tertiary,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Theme":
+        return cls(**data)
+
+    def get_background(self, name: str) -> str:
+        color = getattr(self, name)
+        match = re.fullmatch(r"rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)", color)
+        if not match:
+            raise ValueError(f"Color RGB inválido: {color}")
+        r, g, b = map(int, match.groups())
+        alpha = round(max(0, min(100, self.transparency)) * 255 / 100)
+        return f"rgba({r}, {g}, {b}, {alpha})"

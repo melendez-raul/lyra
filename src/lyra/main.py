@@ -7,10 +7,9 @@ from backend import (
     Library,
     Player,
     Playlist,
-    load_config,
-    save_config,
 )
-from frontend import MainWindow, Theme, ThemeManager
+from frontend import MainWindow, ThemeManager
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QFileDialog
 
@@ -26,7 +25,7 @@ def resolve_library(config: Config) -> Path | None:
         return None
     path = Path(selected)
     config.library_path = str(path)
-    save_config(config)
+    config.save()
     return path
 
 
@@ -37,10 +36,9 @@ def main() -> int:
     app.setWindowIcon(
         QIcon(str(Path(__file__).parent / "frontend/assets/Lyra-logo.png"))
     )
-    theme = Theme()
-    theme_manager = ThemeManager(app=app, theme=theme)
+    config = Config.load()
+    theme_manager = ThemeManager(app=app, theme=config.theme.to_dict())
     theme_manager.apply()
-    config = load_config()
     music_dir = resolve_library(config)
     if music_dir is None:
         return 0
@@ -49,7 +47,10 @@ def main() -> int:
     playlist = Playlist(tracks=library.get_tracks())
     player = Player()
     controller = Controller(player, playlist)
-    window = MainWindow(controller=controller, theme_manager=theme_manager)
+    window = MainWindow(
+        controller=controller, theme_manager=theme_manager, config=config
+    )
+    window.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
     window.show()
     try:
         return app.exec()

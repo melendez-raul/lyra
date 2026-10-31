@@ -1,6 +1,5 @@
 import re
 import sys
-from dataclasses import dataclass, fields
 from pathlib import Path
 
 from PySide6.QtWidgets import QApplication
@@ -14,35 +13,14 @@ def resource_path(relative_path: str) -> Path:
     return base_path / relative_path
 
 
-@dataclass
-class Theme:
-    APP_BACKGROUND: str = "#09090F"
-    CONTENT_SURFACE: str = "#14141F"
-    PLAYER_SURFACE: str = "#101019"
-    SURFACE: str = "#1E1E2B"
-    SURFACE_HOVER: str = "#29293A"
-    BORDER_SUBTLE: str = "#343449"
-    TITLE_COLOR: str = "#FFFFFF"
-    TEXT_PRIMARY: str = "#F4F1FA"
-    TEXT_SECONDARY: str = "#B5B1C5"
-    TEXT_MUTED: str = "#817D94"
-    TEXT_INACTIVE: str = "#5B586B"
-    ACCENT_PRIMARY: str = "#8B5CF6"
-    ACCENT_SECONDARY: str = "#A78BFA"
-    ACCENT_TERTIARY: str = "#6D28D9"
-
-    def to_dict(self) -> dict[str, str]:
-        return {field.name: getattr(self, field.name) for field in fields(self)}
-
-
 class ThemeManager:
-    def __init__(self, app: QApplication, theme: Theme) -> None:
+    def __init__(self, app: QApplication, theme: dict[str, str]) -> None:
         self.app = app
         self.theme = theme
         self.styles_dir = resource_path("frontend/styles")
         self.assets_dir = resource_path("frontend/assets")
 
-    def set_theme(self, theme: Theme) -> None:
+    def set_theme(self, theme: dict[str, str]) -> None:
         self.theme = theme
         self.apply()
 
@@ -56,7 +34,7 @@ class ThemeManager:
             return import_path.read_text(encoding="utf-8")
 
         qss = import_pattern.sub(resolve_import, qss)
-        theme_tokens = self.theme.to_dict()
+        theme_tokens = {key.upper(): value for key, value in self.theme.items()}
         token_pattern = re.compile(
             r"@("
             + "|".join(
