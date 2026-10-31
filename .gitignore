@@ -2,3 +2,6 @@
 **/__pycache__
 /src/tests.py
 config.json
+/dist
+/build
+**.spec
