@@ -1,0 +1,51 @@
+
+/* =====================================
+MAIN
+===================================== */
+
+@import "player.qss";
+@import "library.qss";
+@import "lyrics.qss";
+
+/* Application */
+
+QMainWindow {
+    background-color: @APP_BACKGROUND;
+}
+
+#mainSplitter {
+    background: transparent;
+    border: none;
+}
+
+/* Content */
+
+#contentContainer {
+    background-color: @CONTENT_SURFACE;
+    border: none;
+}
+
+#contentStack {
+    background: transparent;
+    border: none;
+}
+
+/* View Toggle */
+
+#viewToggle {
+    color: @TEXT_PRIMARY;
+    background: transparent;
+    border: none;
+    font-family: "Inter";
+    font-size: 22px;
+    font-weight: 700;
+    padding: 6px 10px;
+}
+
+#viewToggle:hover {
+    color: @ACCENT_PRIMARY;
+}
+
+#viewToggle:pressed {
+    color: @ACCENT_TERTIARY;
+}

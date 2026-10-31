@@ -1,0 +1,102 @@
+/* =====================================
+LIBRARY
+===================================== */
+
+#libraryPanel {
+    background-color: @CONTENT_SURFACE;
+}
+
+#libraryScrollArea {
+    background-color: transparent;
+    border: none;
+}
+
+/* Scrollbar */
+
+#libraryScrollArea QScrollBar:vertical {
+    background: transparent;
+    width: 5px;
+    margin: 4px 1px;
+}
+
+#libraryScrollArea QScrollBar::handle:vertical {
+    background-color: @BORDER_SUBTLE;
+    border-radius: 3px;
+    min-height: 30px;
+}
+
+#libraryScrollArea QScrollBar::handle:vertical:hover {
+    background-color: @ACCENT_PRIMARY;
+}
+
+#libraryScrollArea QScrollBar::add-line:vertical,
+#libraryScrollArea QScrollBar::sub-line:vertical {
+    height: 0;
+    border: none;
+}
+
+#libraryScrollArea QScrollBar::add-page:vertical,
+#libraryScrollArea QScrollBar::sub-page:vertical {
+    background: transparent;
+}
+
+/* List */
+
+#libraryList {
+    background: transparent;
+}
+
+
+/* =====================================
+   TRACK ITEM
+===================================== */
+
+QFrame#trackItem {
+    background-color: transparent;
+    border: none;
+    border-radius: 10px;
+}
+
+QFrame#trackItem:hover {
+    background-color: @SURFACE_HOVER;
+}
+
+QFrame#trackItem[selected="true"] {
+    background-color: @SURFACE;
+}
+
+QFrame#trackItem[selected="true"]:hover {
+    background-color: @SURFACE_HOVER;
+}
+
+/* Cover */
+
+QLabel#trackItemCover {
+    background-color: @SURFACE;
+    border: none;
+    border-radius: 7px;
+}
+
+/* Information */
+
+QLabel#trackItemTitle {
+    color: @TEXT_PRIMARY;
+    background: transparent;
+    font-family: "Inter";
+    font-size: 14px;
+    font-weight: 600;
+}
+
+QLabel#trackItemArtist {
+    color: @TEXT_SECONDARY;
+    background: transparent;
+    font-family: "Inter";
+    font-size: 12px;
+}
+
+QLabel#trackItemAlbum {
+    color: @TEXT_MUTED;
+    background: transparent;
+    font-family: "Inter";
+    font-size: 11px;
+}

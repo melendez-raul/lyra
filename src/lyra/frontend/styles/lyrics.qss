@@ -1,0 +1,98 @@
+
+/* =====================================
+LYRICS
+===================================== */
+
+#lyricsPanel {
+    background-color: @CONTENT_SURFACE;
+}
+
+/* Title */
+
+#lyricsTitle {
+    color: @TEXT_PRIMARY;
+    font-family: "Inter";
+    font-size: 21px;
+    font-weight: 700;
+}
+
+/* Scroll Area */
+
+#lyricsScrollArea {
+    background: transparent;
+    border: none;
+}
+
+#lyricsScrollArea QScrollBar:vertical {
+    background: transparent;
+    width: 5px;
+    margin: 4px 1px;
+}
+
+#lyricsScrollArea QScrollBar::handle:vertical {
+    background-color: @BORDER_SUBTLE;
+    border-radius: 3px;
+    min-height: 30px;
+}
+
+#lyricsScrollArea QScrollBar::handle:vertical:hover {
+    background-color: @ACCENT_PRIMARY;
+}
+
+#lyricsScrollArea QScrollBar::add-line:vertical,
+#lyricsScrollArea QScrollBar::sub-line:vertical {
+    height: 0;
+    border: none;
+}
+
+#lyricsScrollArea QScrollBar::add-page:vertical,
+#lyricsScrollArea QScrollBar::sub-page:vertical {
+    background: transparent;
+}
+
+/* Lyrics List */
+
+#lyricsList {
+    background: transparent;
+}
+
+/* Lyric Item */
+
+#lyricItem {
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+}
+
+/* Hover */
+
+#lyricItem:hover {
+    background-color: @SURFACE;
+}
+
+/* Active Item */
+
+#lyricItem[active="true"] {
+    background: transparent;
+    border: none;
+}
+
+/* Default Lyric */
+
+#lyricText {
+    color: @TEXT_INACTIVE;
+    font-family: "Bricolage Grotesque";
+    font-size: 23px;
+    font-weight: 500;
+    background: transparent;
+}
+
+/* Active Lyric */
+
+#lyricText[active="true"] {
+    color: @TITLE_COLOR;
+    font-family: "Bricolage Grotesque";
+    font-size: 54px;
+    font-weight: 700;
+    background: transparent;
+}
