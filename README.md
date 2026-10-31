@@ -63,5 +63,5 @@ Además:
 - [ ] Recarga de la base de datos
 - [ ] Configuración de temas
 - [ ] Interfaz de configuración
-- [ ] Descarga de letras usando liblrc
+- [ ] Descarga de letras usando lrclib
 - [ ] ...
