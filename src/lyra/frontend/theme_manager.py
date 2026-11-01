@@ -14,15 +14,43 @@ def resource_path(relative_path: str) -> Path:
 
 
 class ThemeManager:
-    def __init__(self, app: QApplication, theme: dict[str, str]) -> None:
+    BACKGROUND_KEYS = {  # noqa: RUF012
+        "APP_BACKGROUND",
+        "CONTENT_SURFACE",
+        "PLAYER_SURFACE",
+        "SURFACE",
+        "SURFACE_HOVER",
+    }
+
+    def __init__(self, app: QApplication, theme: dict) -> None:
         self.app = app
         self.theme = theme
         self.styles_dir = resource_path("frontend/styles")
         self.assets_dir = resource_path("frontend/assets")
 
-    def set_theme(self, theme: dict[str, str]) -> None:
+    def set_theme(self, theme: dict[str, str | int]) -> None:
         self.theme = theme
         self.apply()
+
+    def _prepare_theme(self) -> dict[str, str]:
+        transparency = max(0, min(100, int(self.theme.get("transparency", 100))))
+        alpha = round(transparency * 255 / 100)
+        prepared = {}
+        for key, value in self.theme.items():
+            token = key.upper()
+            if token in self.BACKGROUND_KEYS:
+                match = re.fullmatch(
+                    r"rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)", str(value)
+                )
+                if not match:
+                    raise ValueError(f"Color RGB inválido: {value}")
+                r, g, b = map(int, match.groups())
+                if any(channel > 255 for channel in (r, g, b)):
+                    raise ValueError(f"Color RGB fuera de rango: {value}")
+                prepared[token] = f"rgba({r}, {g}, {b}, {alpha})"
+            elif key != "transparency":
+                prepared[token] = str(value)
+        return prepared
 
     def load_qss(self, filename: str = "main.qss") -> str:
         path = self.styles_dir / filename
@@ -34,7 +62,7 @@ class ThemeManager:
             return import_path.read_text(encoding="utf-8")
 
         qss = import_pattern.sub(resolve_import, qss)
-        theme_tokens = {key.upper(): value for key, value in self.theme.items()}
+        theme_tokens = self._prepare_theme()
         token_pattern = re.compile(
             r"@("
             + "|".join(

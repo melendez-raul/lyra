@@ -1,59 +1,56 @@
 from pathlib import Path
 
-from PySide6.QtCore import QSize, Qt, Signal
+from PySide6.QtCore import Signal
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import (
-    QHBoxLayout,
-    QToolButton,
-    QWidget,
-)
+from PySide6.QtWidgets import QHBoxLayout
+
+from ..rules import AppRules, AppWidget
 
 ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets" / "icons"
 
 
-class PlaybackControls(QWidget):
+class PlaybackControls(AppWidget):
     previous_requested = Signal()
     play_pause_requested = Signal()
     next_requested = Signal()
 
-    def __init__(self, parent: QWidget | None = None) -> None:
-        super().__init__(parent)
-        self.setObjectName("playbackControls")
-        self.previous_button = QToolButton()
-        self.previous_button.setObjectName("previousButton")
-        self.previous_button.setIcon(QIcon(str(ASSETS_DIR / "prev.svg")))
-        self.previous_button.setIconSize(QSize(22, 22))
-        self.previous_button.setAccessibleName("Canción anterior")
-        self.previous_button.setMouseTracking(True)
-        self.previous_button.setAttribute(Qt.WidgetAttribute.WA_Hover, True)
+    def __init__(self, parent=None) -> None:
+        super().__init__("playbackControls", parent)
+        self.previous_button = AppRules.icon_button(
+            ASSETS_DIR / "prev.svg",
+            tooltip="Anterior",
+            icon_size=22,
+            object_name="previousButton",
+        )
+        self.play_button = AppRules.icon_button(
+            ASSETS_DIR / "play.svg",
+            tooltip="Reproducir",
+            icon_size=26,
+            object_name="playButton",
+        )
+        self.next_button = AppRules.icon_button(
+            ASSETS_DIR / "next.svg",
+            tooltip="Siguiente",
+            icon_size=22,
+            object_name="nextButton",
+        )
         self.previous_button.clicked.connect(self.previous_requested.emit)
-        self.play_button = QToolButton()
-        self.play_button.setObjectName("playButton")
-        self.play_button.setIcon(QIcon(str(ASSETS_DIR / "play.svg")))
-        self.play_button.setIconSize(QSize(26, 26))
-        self.play_button.setAccessibleName("Reproducir")
         self.play_button.clicked.connect(self.play_pause_requested.emit)
-        self.next_button = QToolButton()
-        self.next_button.setObjectName("nextButton")
-        self.next_button.setIcon(QIcon(str(ASSETS_DIR / "next.svg")))
-        self.next_button.setIconSize(QSize(22, 22))
-        self.next_button.setAccessibleName("Canción siguiente")
-        self.next_button.setMouseTracking(True)
-        self.next_button.setAttribute(Qt.WidgetAttribute.WA_Hover, True)
         self.next_button.clicked.connect(self.next_requested.emit)
-        layout = QHBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(8)
-        layout.addStretch()
-        layout.addWidget(self.previous_button)
-        layout.addWidget(self.play_button)
-        layout.addWidget(self.next_button)
-        layout.addStretch()
+        self.main_layout = QHBoxLayout(self)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setSpacing(8)
+        self.main_layout.addStretch()
+        self.main_layout.addWidget(self.previous_button)
+        self.main_layout.addWidget(self.play_button)
+        self.main_layout.addWidget(self.next_button)
+        self.main_layout.addStretch()
 
     def set_playing(self, playing: bool) -> None:
         icon_name = "pause.svg" if playing else "play.svg"
         self.play_button.setIcon(QIcon(str(ASSETS_DIR / icon_name)))
         self.play_button.setAccessibleName("Pausar" if playing else "Reproducir")
+        self.play_button.setToolTip("Pausar" if playing else "Reproducir")
 
     def set_enabled(self, enabled: bool) -> None:
         self.previous_button.setEnabled(enabled)

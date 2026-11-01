@@ -1,13 +1,23 @@
-from PySide6.QtCore import QEasingCurve, QPropertyAnimation, Qt, QTimer
-from PySide6.QtWidgets import QFrame, QScrollArea, QVBoxLayout, QWidget
+from PySide6.QtCore import (
+    QEasingCurve,
+    QPropertyAnimation,
+    Qt,
+    QTimer,
+)
+from PySide6.QtWidgets import (
+    QFrame,
+    QScrollArea,
+    QVBoxLayout,
+    QWidget,
+)
 
+from ..rules import AppWidget
 from .lyric_item import LyricItem
 
 
-class LyricsPanel(QFrame):
+class LyricsPanel(AppWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
-        super().__init__(parent)
-        self.setObjectName("lyricsPanel")
+        super().__init__("lyricsPanel", parent)
         self._items: list[LyricItem] = []
         self._active_index = -1
         self.scroll_area = QScrollArea()
@@ -26,10 +36,10 @@ class LyricsPanel(QFrame):
         self.bottom_spacer.setFixedHeight(0)
         self.list_layout.addWidget(self.bottom_spacer)
         self.scroll_area.setWidget(self.list_widget)
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(24, 24, 24, 24)
-        layout.setSpacing(24)
-        layout.addWidget(self.scroll_area, 1)
+        self.main_layout = QVBoxLayout(self)
+        self.main_layout.setContentsMargins(24, 24, 24, 24)
+        self.main_layout.setSpacing(24)
+        self.main_layout.addWidget(self.scroll_area, 1)
         self.scroll_animation = QPropertyAnimation(
             self.scroll_area.verticalScrollBar(), b"value", self
         )
@@ -60,7 +70,7 @@ class LyricsPanel(QFrame):
     def _scroll_to_item(self, item: LyricItem) -> None:
         if item not in self._items:
             return
-        self.list_widget.layout().activate()  # pyright: ignore[reportOptionalMemberAccess]
+        self.list_layout.activate()
         scrollbar = self.scroll_area.verticalScrollBar()
         target = item.mapTo(self.list_widget, item.rect().topLeft()).y()
         self.scroll_animation.stop()
@@ -81,7 +91,7 @@ class LyricsPanel(QFrame):
             item.deleteLater()
         self._items.clear()
 
-    def _update_bottom_spacer(self) -> None: # Leaves space between the last LyricItem
+    def _update_bottom_spacer(self) -> None:
         height = self.scroll_area.viewport().height()
         self.bottom_spacer.setFixedHeight(height)
 

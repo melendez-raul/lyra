@@ -1,35 +1,33 @@
 from backend import Playlist
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QFrame, QScrollArea, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QScrollArea, QVBoxLayout, QWidget
 
+from ..rules import AppWidget
 from .track_item import TrackItem
 
 
-class LibraryPanel(QFrame):
+class LibraryPanel(AppWidget):
     play_requested = Signal(int)
 
     def __init__(self, playlist: Playlist, parent: QWidget | None = None) -> None:
-        super().__init__(parent)
-        self.setObjectName("libraryPanel")
+        super().__init__("libraryPanel", parent)
         self._playlist = playlist
         self._items: list[TrackItem] = []
         self.scroll_area = QScrollArea()
         self.scroll_area.setObjectName("libraryScrollArea")
         self.scroll_area.setWidgetResizable(True)
-        self.scroll_area.setFrameShape(QFrame.Shape.NoFrame)
+        self.scroll_area.setFrameShape(QScrollArea.Shape.NoFrame)
         self.list_widget = QWidget()
         self.list_widget.setObjectName("libraryList")
         self.list_layout = QVBoxLayout(self.list_widget)
         self.list_layout.setContentsMargins(0, 0, 0, 0)
-        self.list_layout.setSpacing(0)
+        self.list_layout.setSpacing(8)
         self.list_layout.addStretch()
         self.scroll_area.setWidget(self.list_widget)
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(24, 24, 24, 24)
-        layout.setSpacing(24)
-        self.list_layout.setContentsMargins(0, 0, 0, 0)
-        self.list_layout.setSpacing(8)
-        layout.addWidget(self.scroll_area, 1)
+        self.main_layout = QVBoxLayout(self)
+        self.main_layout.setContentsMargins(24, 24, 24, 24)
+        self.main_layout.setSpacing(24)
+        self.main_layout.addWidget(self.scroll_area, 1)
         self.refresh()
 
     def refresh(self) -> None:

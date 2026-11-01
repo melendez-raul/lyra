@@ -1,51 +1,436 @@
+/* ============================================
+   GLOBAL
+   Material Dark · moderno
+============================================ */
 
-/* =====================================
-MAIN
-===================================== */
+QWidget {
+    color: @TEXT_PRIMARY;
+    font-family: "Inter", "Segoe UI", "Noto Sans", sans-serif;
+    font-size: 15px;
+}
 
-@import "player.qss";
-@import "library.qss";
-@import "lyrics.qss";
-
-/* Application */
-
-QMainWindow {
+QWidget#appBackground {
     background-color: @APP_BACKGROUND;
 }
 
-#mainSplitter {
-    background: transparent;
-    border: none;
-}
-
-/* Content */
-
-#contentContainer {
+QWidget#contentContainer {
     background-color: @CONTENT_SURFACE;
-    border: none;
 }
 
-#contentStack {
-    background: transparent;
-    border: none;
-}
 
-/* View Toggle */
+/* ============================================
+   TYPOGRAPHY
+============================================ */
 
-#viewToggle {
-    color: @TEXT_PRIMARY;
-    background: transparent;
-    border: none;
-    font-family: "Inter";
-    font-size: 22px;
+QLabel#title {
+    color: @TITLE_COLOR;
+    font-size: 28px;
     font-weight: 700;
-    padding: 6px 10px;
 }
 
-#viewToggle:hover {
-    color: @ACCENT_PRIMARY;
+QLabel#subtitle {
+    color: @TEXT_PRIMARY;
+    font-size: 17px;
+    font-weight: 600;
 }
 
-#viewToggle:pressed {
-    color: @ACCENT_TERTIARY;
+QLabel#description {
+    color: @TEXT_SECONDARY;
+    font-size: 14px;
+}
+
+QLabel#label {
+    color: @TEXT_SECONDARY;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+/* ============================================
+   BUTTONS (sin borde, pill)
+============================================ */
+
+QPushButton {
+    background-color: @SURFACE;
+    color: @TEXT_PRIMARY;
+    border: none;
+    outline: none;
+    border-radius: 18px;
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+QPushButton:hover {
+    background-color: @SURFACE_HOVER;
+}
+
+QPushButton:pressed {
+    background-color: @ACCENT_TERTIARY;
+}
+
+QPushButton:focus {
+    background-color: @SURFACE_HOVER;
+}
+
+QPushButton:checked {
+    background-color: @ACCENT_PRIMARY;
+}
+
+QPushButton:disabled {
+    color: @TEXT_INACTIVE;
+    background-color: @CONTENT_SURFACE;
+}
+
+
+/* ============================================
+   INPUTS
+============================================ */
+
+QLineEdit {
+    background-color: @SURFACE;
+    color: @TEXT_PRIMARY;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    padding: 11px 16px;
+    font-size: 14px;
+    selection-background-color: @ACCENT_PRIMARY;
+}
+
+QLineEdit:hover {
+    border-color: @BORDER_SUBTLE;
+}
+
+QLineEdit:focus {
+    border: 1px solid @ACCENT_SECONDARY;
+}
+
+QLineEdit:read-only {
+    color: @TEXT_SECONDARY;
+    background-color: transparent;
+    border-color: @BORDER_SUBTLE;
+}
+
+
+/* ============================================
+   SLIDERS (appSlider · seekSlider · clickableSlider)
+   Riel 6px · handle 10px (14px hover)
+============================================ */
+
+QSlider#appSlider:horizontal,
+QSlider#seekSlider:horizontal,
+QSlider#clickableSlider:horizontal {
+    background: transparent;
+    border: none;
+    min-height: 22px;
+}
+
+QSlider#appSlider::groove:horizontal,
+QSlider#seekSlider::groove:horizontal,
+QSlider#clickableSlider::groove:horizontal {
+    background-color: @BORDER_SUBTLE;
+    border: none;
+    height: 6px;
+    border-radius: 3px;
+}
+
+QSlider#appSlider::sub-page:horizontal,
+QSlider#seekSlider::sub-page:horizontal,
+QSlider#clickableSlider::sub-page:horizontal {
+    background-color: @ACCENT_PRIMARY;
+    border-radius: 3px;
+}
+
+QSlider#appSlider::add-page:horizontal,
+QSlider#seekSlider::add-page:horizontal,
+QSlider#clickableSlider::add-page:horizontal {
+    background: transparent;
+}
+
+QSlider#appSlider::handle:horizontal,
+QSlider#seekSlider::handle:horizontal,
+QSlider#clickableSlider::handle:horizontal {
+    background-color: white;
+    border: none;
+    width: 10px;
+    height: 10px;
+    margin: -2px 0;
+    border-radius: 5px;
+}
+
+QSlider#appSlider::handle:horizontal:hover,
+QSlider#seekSlider::handle:horizontal:hover,
+QSlider#clickableSlider::handle:horizontal:hover {
+    width: 14px;
+    height: 14px;
+    margin: -4px 0;
+    border-radius: 7px;
+}
+
+QSlider#appSlider::handle:horizontal:pressed,
+QSlider#seekSlider::handle:horizontal:pressed,
+QSlider#clickableSlider::handle:horizontal:pressed {
+    background-color: @ACCENT_SECONDARY;
+    width: 14px;
+    height: 14px;
+    margin: -4px 0;
+    border-radius: 7px;
+}
+
+/* Disabled (pseudo-elemento primero, estado después) */
+QSlider#appSlider::sub-page:horizontal:disabled {
+    background-color: @TEXT_INACTIVE;
+}
+
+QSlider#appSlider::handle:horizontal:disabled {
+    background-color: @TEXT_INACTIVE;
+}
+
+
+/* ============================================
+   SCROLLBARS
+============================================ */
+
+QScrollBar:vertical {
+    background: transparent;
+    width: 8px;
+    margin: 2px;
+}
+
+QScrollBar::handle:vertical {
+    background: @BORDER_SUBTLE;
+    border-radius: 2px;
+    min-height: 36px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: @TEXT_MUTED;
+}
+
+QScrollBar::handle:vertical:pressed {
+    background: @ACCENT_SECONDARY;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: transparent;
+}
+
+QScrollBar:horizontal {
+    background: transparent;
+    height: 8px;
+    margin: 2px;
+}
+
+QScrollBar::handle:horizontal {
+    background: @BORDER_SUBTLE;
+    border-radius: 2px;
+    min-width: 36px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: @TEXT_MUTED;
+}
+
+QScrollBar::handle:horizontal:pressed {
+    background: @ACCENT_SECONDARY;
+}
+
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal {
+    width: 0;
+}
+
+QScrollBar::add-page:horizontal,
+QScrollBar::sub-page:horizontal {
+    background: transparent;
+}
+
+
+/* ============================================
+   PLAYER
+============================================ */
+
+QWidget#playerPanel {
+    background-color: @PLAYER_SURFACE;
+    border-radius: 18px;
+}
+
+QWidget#albumArt {
+    background-color: transparent;
+    border-radius: 14px;
+}
+
+QWidget#trackInfo {
+    background-color: transparent;
+}
+
+QWidget#playbackControls {
+    background-color: transparent;
+}
+
+QToolButton {
+    background-color: transparent;
+    color: @TEXT_SECONDARY;
+    border: none;
+    outline: none;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+QToolButton:hover {
+    background-color: @SURFACE_HOVER;
+    color: @TEXT_PRIMARY;
+}
+
+QToolButton:pressed {
+    background-color: @ACCENT_TERTIARY;
+    color: @TEXT_PRIMARY;
+}
+
+QToolButton:checked {
+    color: @ACCENT_SECONDARY;
+}
+
+QToolButton:disabled {
+    color: @TEXT_INACTIVE;
+}
+
+QWidget#seekBar {
+    background-color: transparent;
+}
+
+QLabel#seekCurrentTime,
+QLabel#seekTotalTime {
+    color: @TEXT_MUTED;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+
+/* ============================================
+   LYRICS
+============================================ */
+
+QWidget#lyricsPanel {
+    background-color: transparent;
+}
+
+QScrollArea#lyricsScrollArea {
+    background-color: transparent;
+    border: none;
+}
+
+QWidget#lyricsList {
+    background-color: transparent;
+}
+
+/* Inactiva */
+QWidget#lyricItem {
+    background-color: transparent;
+    border-radius: 14px;
+    border-left: 4px solid transparent;
+}
+
+QWidget#lyricItem QLabel#lyric {
+    background-color: transparent;
+    color: @TEXT_MUTED;
+    font-size: 30px;
+    font-weight: 500;
+}
+
+/* Inactiva + hover */
+QWidget#lyricItem[hovered="true"] {
+    background-color: @SURFACE_HOVER;
+}
+
+QWidget#lyricItem[hovered="true"] QLabel#lyric {
+    color: @TEXT_PRIMARY;
+}
+
+/* Activa (va después para ganar al hover) */
+QWidget#lyricItem[active="true"] {
+    background-color: transparent;
+}
+
+QWidget#lyricItem[active="true"] QLabel#lyric {
+    color: @ACCENT_SECONDARY;
+    font-size: 50px;
+    font-weight: 800;
+}
+
+/* ============================================
+   LIBRARY
+============================================ */
+
+QWidget#libraryPanel {
+    background-color: transparent;
+}
+
+QScrollArea#libraryScrollArea {
+    background-color: transparent;
+    border: none;
+}
+
+QWidget#libraryList {
+    background-color: transparent;
+}
+
+QWidget#trackItem {
+    background-color: transparent;
+    border-radius: 14px;
+}
+
+QWidget#trackItem:hover {
+    background-color: @SURFACE_HOVER;
+}
+
+QWidget#trackItem QLabel {
+    background-color: transparent;
+}
+
+
+/* ============================================
+   CONFIGURATION
+============================================ */
+
+QWidget#configView {
+    background-color: @CONTENT_SURFACE;
+}
+
+QWidget#configHeader {
+    background-color: @CONTENT_SURFACE;
+}
+
+QWidget#configSections {
+    background-color: transparent;
+}
+
+QScrollArea#configScrollArea {
+    background-color: transparent;
+    border: none;
+}
+
+QWidget#libraryPathEntry {
+    background-color: transparent;
+}
+
+QWidget#themeSection {
+    background-color: transparent;
+}
+
+QWidget#colorEntry {
+    background-color: transparent;
+}
+
+/* Muestras de color: círculo de 30x30, sin borde */
+QWidget#colorEntry QPushButton {
+    border: none;
+    border-radius: 15px;
+    padding: 0;
 }

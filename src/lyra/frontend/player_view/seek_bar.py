@@ -2,24 +2,23 @@ from backend import PlaybackStatus
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QHBoxLayout,
-    QLabel,
     QSlider,
     QVBoxLayout,
     QWidget,
 )
 
-
-def format_time(seconds: float) -> str:
-    total = max(0, int(seconds))
-    minutes, seconds = divmod(total, 60)
-    return f"{minutes}:{seconds:02d}"
+from ..rules import AppRules, AppWidget
 
 
 class ClickableSlider(QSlider):
     def __init__(
-        self, orientation: Qt.Orientation, parent: QWidget | None = None
+        self,
+        orientation: Qt.Orientation = Qt.Orientation.Horizontal,
+        parent: QWidget | None = None,
     ) -> None:
         super().__init__(orientation, parent)
+        self.setObjectName("clickableSlider")
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
         self._dragging = False
 
     def _update_position(self, x: float) -> None:
@@ -63,36 +62,38 @@ class ClickableSlider(QSlider):
         super().mouseReleaseEvent(event)
 
 
-class SeekBar(QWidget):
+def format_time(seconds: float) -> str:
+    total = max(0, int(seconds))
+    minutes, seconds = divmod(total, 60)
+    return f"{minutes}:{seconds:02d}"
+
+
+class SeekBar(AppWidget):
     seek_requested = Signal(float)
 
     def __init__(self, parent: QWidget | None = None) -> None:
-        super().__init__(parent)
-        self.setObjectName("seekBar")
+        super().__init__("seekBar", parent)
         self._duration = 0.0
         self._seeking = False
-        self.current_time = QLabel("0:00")
-        self.current_time.setObjectName("seekCurrentTime")
-        self.total_time = QLabel("--:--")
-        self.total_time.setObjectName("seekTotalTime")
+        self.current_time = AppRules.label("0:00")
+        self.total_time = AppRules.label("--:--")
         self.slider = ClickableSlider(Qt.Orientation.Horizontal)
-        self.slider.setObjectName("seekSlider")
         self.slider.setRange(0, 0)
         self.slider.setTracking(True)
         self.slider.sliderPressed.connect(self._start_seek)
         self.slider.sliderMoved.connect(self._preview_position)
         self.slider.sliderReleased.connect(self._finish_seek)
-        times = QHBoxLayout()
-        times.setContentsMargins(0, 0, 0, 0)
-        times.setSpacing(0)
-        times.addWidget(self.current_time)
-        times.addStretch()
-        times.addWidget(self.total_time)
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
-        layout.addWidget(self.slider)
-        layout.addLayout(times)
+        self.time_layout = QHBoxLayout()
+        self.time_layout.setContentsMargins(0, 0, 0, 0)
+        self.time_layout.setSpacing(0)
+        self.time_layout.addWidget(self.current_time)
+        self.time_layout.addStretch()
+        self.time_layout.addWidget(self.total_time)
+        self.main_layout = QVBoxLayout(self)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setSpacing(0)
+        self.main_layout.addWidget(self.slider)
+        self.main_layout.addLayout(self.time_layout)
 
     def set_status(self, status: PlaybackStatus) -> None:
         self._duration = status.duration or 0.0

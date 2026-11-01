@@ -1,29 +1,27 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QVBoxLayout, QWidget
+
+from ..rules import AppRules, AppWidget
 
 
-class TrackInfo(QWidget):
+class TrackInfo(AppWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
-        super().__init__(parent)
-        self.setObjectName("trackInfo")
-        self.title = QLabel()
-        self.title.setObjectName("trackTitle")
+        super().__init__("trackInfo", parent)
+        self.title = AppRules.title("")
         self.title.setWordWrap(True)
         self.title.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.artist = QLabel()
-        self.artist.setObjectName("trackArtist")
+        self.artist = AppRules.subtitle("")
         self.artist.setWordWrap(True)
         self.artist.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.album = QLabel()
-        self.album.setObjectName("trackAlbum")
+        self.album = AppRules.description("")
         self.album.setWordWrap(True)
         self.album.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
-        layout.addWidget(self.title)
-        layout.addWidget(self.artist)
-        layout.addWidget(self.album)
+        self.main_layout = QVBoxLayout(self)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setSpacing(0)
+        self.main_layout.addWidget(self.title)
+        self.main_layout.addWidget(self.artist)
+        self.main_layout.addWidget(self.album)
 
     def set_track_info(self, title: str, artist: str, album: str) -> None:
         self.title.setText(title)

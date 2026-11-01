@@ -1,7 +1,10 @@
-from PySide6.QtWidgets import QFrame, QLabel, QVBoxLayout, QWidget
+from PySide6.QtCore import QEvent, Qt
+from PySide6.QtWidgets import QVBoxLayout, QWidget
+
+from ..rules import AppRules, AppWidget
 
 
-class LyricItem(QFrame):
+class LyricItem(AppWidget):
     def __init__(
         self,
         time: float,
@@ -9,26 +12,48 @@ class LyricItem(QFrame):
         is_active: bool = False,
         parent: QWidget | None = None,
     ) -> None:
-        super().__init__(parent)
+        super().__init__("lyricItem", parent)
         self.time = time
         self.text = text
         self.is_active = False
-        self.setObjectName("lyricItem")
-        self.text_label = QLabel(text)
-        self.text_label.setObjectName("lyricText")
+        self.is_hovered = False
+        self.text_label = AppRules.lyric(text)
         self.text_label.setWordWrap(True)
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(12, 12, 12, 12)
-        layout.setSpacing(0)
-        layout.addWidget(self.text_label)
+        self.text_label.setAttribute(
+            Qt.WidgetAttribute.WA_TransparentForMouseEvents, True
+        )
+        self.main_layout = QVBoxLayout(self)
+        self.main_layout.setContentsMargins(12, 12, 12, 12)
+        self.main_layout.setSpacing(0)
+        self.main_layout.addWidget(self.text_label)
+        self.setProperty("hovered", False)
         self.set_active(is_active)
 
     def set_active(self, active: bool) -> None:
         self.is_active = active
         self.setProperty("active", active)
-        self.text_label.setProperty("active", active)
+        self._refresh_all()
+
+    def enterEvent(self, event: QEvent) -> None:  # Evento para hover
+        super().enterEvent(event)  # pyright: ignore[reportArgumentType]
+        self._set_hovered(True)
+
+    def leaveEvent(self, event: QEvent) -> None:
+        super().leaveEvent(event)
+        self._set_hovered(False)
+
+    def _set_hovered(self, hovered: bool) -> None:
+        if self.is_hovered == hovered:
+            return
+        self.is_hovered = hovered
+        self.setProperty("hovered", hovered)
+        self._refresh_all()
+
+    def _refresh_all(self) -> None:
         self._refresh_style(self)
         self._refresh_style(self.text_label)
+        self.text_label.updateGeometry()
+        self.updateGeometry()
 
     @staticmethod
     def _refresh_style(widget: QWidget) -> None:

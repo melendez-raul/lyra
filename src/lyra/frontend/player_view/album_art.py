@@ -2,13 +2,14 @@ from pathlib import Path
 
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QPainter, QPixmap
-from PySide6.QtWidgets import QSizePolicy, QWidget
+from PySide6.QtWidgets import QSizePolicy
+
+from ..rules import AppWidget
 
 
-class AlbumArt(QWidget):
-    def __init__(self, parent: QWidget | None = None) -> None:
-        super().__init__(parent)
-        self.setObjectName("albumArt")
+class AlbumArt(AppWidget):
+    def __init__(self, parent=None) -> None:
+        super().__init__("albumArt", parent)
         self._original_pixmap = QPixmap()
         policy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Ignored)
         policy.setHeightForWidth(True)
@@ -51,12 +52,9 @@ class AlbumArt(QWidget):
         target.scale(self.size(), Qt.AspectRatioMode.KeepAspectRatio)
         x = (self.width() - target.width()) // 2
         y = (self.height() - target.height()) // 2
-        painter.drawPixmap(
-            x,
-            y,
-            self._original_pixmap.scaled(
-                target,
-                Qt.AspectRatioMode.KeepAspectRatio,
-                Qt.TransformationMode.SmoothTransformation,
-            ),
+        scaled_pixmap = self._original_pixmap.scaled(
+            target,
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.SmoothTransformation,
         )
+        painter.drawPixmap(x, y, scaled_pixmap)
