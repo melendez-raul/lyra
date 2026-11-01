@@ -22,21 +22,33 @@ class ThemeManager:
         "SURFACE_HOVER",
     }
 
-    def __init__(self, app: QApplication, theme: dict) -> None:
+    def __init__(self, app: QApplication, colors: dict, fonts: dict) -> None:
         self.app = app
-        self.theme = theme
+        self.colors = colors
+        self.fonts = fonts
         self.styles_dir = resource_path("frontend/styles")
         self.assets_dir = resource_path("frontend/assets")
 
-    def set_theme(self, theme: dict[str, str | int]) -> None:
-        self.theme = theme
-        self.apply()
+    def set_theme(self, colors: dict | None = None, fonts: dict | None = None) -> None:
+        """Actualiza los datos y reaplica."""
+        if colors is not None:
+            self.colors = colors
+        if fonts is not None:
+            self.fonts = fonts
+        self.reload_theme()
+
+    @staticmethod
+    def _font_family(fonts: list[str]) -> str:
+        return ", ".join(f'"{name}"' if " " in name else name for name in fonts)
 
     def _prepare_theme(self) -> dict[str, str]:
-        transparency = max(0, min(100, int(self.theme.get("transparency", 100))))
+        transparency = max(0, min(100, int(self.colors.get("transparency", 100))))
         alpha = round(transparency * 255 / 100)
-        prepared = {}
-        for key, value in self.theme.items():
+        prepared: dict[str, str] = {}
+
+        for key, value in self.colors.items():
+            if key == "transparency":
+                continue
             token = key.upper()
             if token in self.BACKGROUND_KEYS:
                 match = re.fullmatch(
@@ -48,8 +60,15 @@ class ThemeManager:
                 if any(channel > 255 for channel in (r, g, b)):
                     raise ValueError(f"Color RGB fuera de rango: {value}")
                 prepared[token] = f"rgba({r}, {g}, {b}, {alpha})"
-            elif key != "transparency":
+            else:
                 prepared[token] = str(value)
+
+        for key, font in self.fonts.items():
+            name = key.upper()
+            prepared[f"{name}_FONTS"] = self._font_family(font["fonts"])
+            prepared[f"{name}_SIZE"] = f"{font['size']}px"
+            prepared[f"{name}_WEIGHT"] = str(font["weight"])
+
         return prepared
 
     def load_qss(self, filename: str = "main.qss") -> str:
@@ -74,6 +93,9 @@ class ThemeManager:
         qss = qss.replace("@ASSETS", self.assets_dir.as_posix())
         return qss
 
+    def reload_theme(self) -> None:
+        """Relee main.qss (y sus @import) de disco, sustituye tokens y reaplica."""
+        self.app.setStyleSheet(self.load_qss())
+
     def apply(self) -> None:
-        stylesheet = self.load_qss()
-        self.app.setStyleSheet(stylesheet)
+        self.reload_theme()

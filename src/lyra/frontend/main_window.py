@@ -29,6 +29,8 @@ class MainWindow(QMainWindow):
 
         self.controller = controller
         self.theme_manager = theme_manager
+        self.config = config
+        self._library_path = config.library_path
 
         # ==================================
         # WINDOW CONFIGURATION
@@ -44,11 +46,11 @@ class MainWindow(QMainWindow):
 
         self.player_panel = PlayerPanel()
 
-        self.library_panel = LibraryPanel(controller.playlist)
+        self.library_panel = LibraryPanel(self.controller.playlist)
 
         self.lyrics_panel = LyricsPanel()
 
-        self.config_panel = ConfigPanel(config)
+        self.config_panel = ConfigPanel(self.config)
 
         # ==================================
         # CONTENT STACK
@@ -167,6 +169,9 @@ class MainWindow(QMainWindow):
 
         self.library_panel.play_requested.connect(self.controller.play_index)
 
+        self.controller.playlist_changed.connect(self.library_panel.set_playlist)
+        self.config_panel.config_changed.connect(self._on_config_changed)
+
     def _connect_navigation(self) -> None:
 
         self.view_button.clicked.connect(self.toggle_view)
@@ -265,3 +270,13 @@ class MainWindow(QMainWindow):
         self.player_panel.set_status(status)
 
         self.update_lyrics_position(status.time)
+
+    def _on_config_changed(self) -> None:
+        self.theme_manager.set_theme(
+            self.config.colors.to_dict(),
+            self.config.fonts.to_dict(),
+        )
+        if self.config.library_path != self._library_path:
+            self._library_path = self.config.library_path
+            self.controller.load_library(self.config.library_path)  # pyright: ignore[reportArgumentType]
+            self._initialize_player()

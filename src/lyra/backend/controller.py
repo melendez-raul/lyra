@@ -1,5 +1,8 @@
+from pathlib import Path
+
 from PySide6.QtCore import QObject, Signal
 
+from .library import Library  # ajusta al módulo real
 from .models import PlaybackStatus, Playlist, Track
 from .player import Player
 
@@ -77,3 +80,14 @@ class Controller(QObject):
 
     def _on_status_changed(self, status: PlaybackStatus) -> None:
         self.status_changed.emit(status)
+
+    def load_library(self, path: str | Path) -> None:
+        path = Path(path)
+        if not path.is_dir():
+            return
+        self.player.stop()
+        library = Library(path)
+        library.process()
+        self.playlist = Playlist(tracks=library.get_tracks())
+        self.playlist_changed.emit(self.playlist)
+        self.current_track_changed.emit(None)

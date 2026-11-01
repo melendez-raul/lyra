@@ -43,6 +43,7 @@ class Player(QObject):
     def stop(self) -> None:
         self._ensure_open()
         self._player.stop()
+        self._track = None
         self._emit_status()
 
     def seek(self, seconds: float) -> None:

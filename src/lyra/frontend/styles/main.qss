@@ -1,55 +1,43 @@
-/* ============================================
-   GLOBAL
-   Material Dark · moderno
-============================================ */
-
+/* ===== GLOBAL ===== */
 QWidget {
     color: @TEXT_PRIMARY;
     font-family: "Inter", "Segoe UI", "Noto Sans", sans-serif;
     font-size: 15px;
 }
 
-QWidget#appBackground {
-    background-color: @APP_BACKGROUND;
-}
+QWidget#appBackground { background-color: @APP_BACKGROUND; }
+QWidget#contentContainer { background-color: @CONTENT_SURFACE; }
 
-QWidget#contentContainer {
-    background-color: @CONTENT_SURFACE;
-}
-
-
-/* ============================================
-   TYPOGRAPHY
-============================================ */
-
+/* ===== TYPOGRAPHY ===== */
 QLabel#title {
     color: @TITLE_COLOR;
-    font-size: 28px;
-    font-weight: 700;
+    font-family: @TITLE_FONTS;
+    font-size: @TITLE_SIZE;
+    font-weight: @TITLE_WEIGHT;
 }
 
 QLabel#subtitle {
     color: @TEXT_PRIMARY;
-    font-size: 17px;
-    font-weight: 600;
+    font-family: @SUBTITLE_FONTS;
+    font-size: @SUBTITLE_SIZE;
+    font-weight: @SUBTITLE_WEIGHT;
 }
 
 QLabel#description {
     color: @TEXT_SECONDARY;
-    font-size: 14px;
+    font-family: @DESCRIPTION_FONTS;
+    font-size: @DESCRIPTION_SIZE;
+    font-weight: @DESCRIPTION_WEIGHT;
 }
 
 QLabel#label {
     color: @TEXT_SECONDARY;
-    font-size: 14px;
-    font-weight: 500;
+    font-family: @LABEL_FONTS;
+    font-size: @LABEL_SIZE;
+    font-weight: @LABEL_WEIGHT;
 }
 
-
-/* ============================================
-   BUTTONS (sin borde, pill)
-============================================ */
-
+/* ===== BUTTONS ===== */
 QPushButton {
     background-color: @SURFACE;
     color: @TEXT_PRIMARY;
@@ -61,32 +49,17 @@ QPushButton {
     font-weight: 600;
 }
 
-QPushButton:hover {
-    background-color: @SURFACE_HOVER;
-}
-
-QPushButton:pressed {
-    background-color: @ACCENT_TERTIARY;
-}
-
-QPushButton:focus {
-    background-color: @SURFACE_HOVER;
-}
-
-QPushButton:checked {
-    background-color: @ACCENT_PRIMARY;
-}
+QPushButton:hover { background-color: @SURFACE_HOVER; }
+QPushButton:pressed { background-color: @ACCENT_TERTIARY; }
+QPushButton:focus { background-color: @SURFACE_HOVER; }
+QPushButton:checked { background-color: @ACCENT_PRIMARY; }
 
 QPushButton:disabled {
     color: @TEXT_INACTIVE;
     background-color: @CONTENT_SURFACE;
 }
 
-
-/* ============================================
-   INPUTS
-============================================ */
-
+/* ===== INPUTS ===== */
 QLineEdit {
     background-color: @SURFACE;
     color: @TEXT_PRIMARY;
@@ -97,13 +70,8 @@ QLineEdit {
     selection-background-color: @ACCENT_PRIMARY;
 }
 
-QLineEdit:hover {
-    border-color: @BORDER_SUBTLE;
-}
-
-QLineEdit:focus {
-    border: 1px solid @ACCENT_SECONDARY;
-}
+QLineEdit:hover { border-color: @BORDER_SUBTLE; }
+QLineEdit:focus { border: 1px solid @ACCENT_SECONDARY; }
 
 QLineEdit:read-only {
     color: @TEXT_SECONDARY;
@@ -111,12 +79,7 @@ QLineEdit:read-only {
     border-color: @BORDER_SUBTLE;
 }
 
-
-/* ============================================
-   SLIDERS (appSlider · seekSlider · clickableSlider)
-   Riel 6px · handle 10px (14px hover)
-============================================ */
-
+/* ===== SLIDERS (riel 6px · handle 10px, 14px hover) ===== */
 QSlider#appSlider:horizontal,
 QSlider#seekSlider:horizontal,
 QSlider#clickableSlider:horizontal {
@@ -177,20 +140,11 @@ QSlider#clickableSlider::handle:horizontal:pressed {
     border-radius: 7px;
 }
 
-/* Disabled (pseudo-elemento primero, estado después) */
-QSlider#appSlider::sub-page:horizontal:disabled {
-    background-color: @TEXT_INACTIVE;
-}
+/* disabled: pseudo-elemento primero, estado después */
+QSlider#appSlider::sub-page:horizontal:disabled { background-color: @TEXT_INACTIVE; }
+QSlider#appSlider::handle:horizontal:disabled { background-color: @TEXT_INACTIVE; }
 
-QSlider#appSlider::handle:horizontal:disabled {
-    background-color: @TEXT_INACTIVE;
-}
-
-
-/* ============================================
-   SCROLLBARS
-============================================ */
-
+/* ===== SCROLLBARS ===== */
 QScrollBar:vertical {
     background: transparent;
     width: 8px;
@@ -203,23 +157,14 @@ QScrollBar::handle:vertical {
     min-height: 36px;
 }
 
-QScrollBar::handle:vertical:hover {
-    background: @TEXT_MUTED;
-}
-
-QScrollBar::handle:vertical:pressed {
-    background: @ACCENT_SECONDARY;
-}
+QScrollBar::handle:vertical:hover { background: @TEXT_MUTED; }
+QScrollBar::handle:vertical:pressed { background: @ACCENT_SECONDARY; }
 
 QScrollBar::add-line:vertical,
-QScrollBar::sub-line:vertical {
-    height: 0;
-}
+QScrollBar::sub-line:vertical { height: 0; }
 
 QScrollBar::add-page:vertical,
-QScrollBar::sub-page:vertical {
-    background: transparent;
-}
+QScrollBar::sub-page:vertical { background: transparent; }
 
 QScrollBar:horizontal {
     background: transparent;
@@ -233,46 +178,25 @@ QScrollBar::handle:horizontal {
     min-width: 36px;
 }
 
-QScrollBar::handle:horizontal:hover {
-    background: @TEXT_MUTED;
-}
-
-QScrollBar::handle:horizontal:pressed {
-    background: @ACCENT_SECONDARY;
-}
+QScrollBar::handle:horizontal:hover { background: @TEXT_MUTED; }
+QScrollBar::handle:horizontal:pressed { background: @ACCENT_SECONDARY; }
 
 QScrollBar::add-line:horizontal,
-QScrollBar::sub-line:horizontal {
-    width: 0;
-}
+QScrollBar::sub-line:horizontal { width: 0; }
 
 QScrollBar::add-page:horizontal,
-QScrollBar::sub-page:horizontal {
-    background: transparent;
-}
+QScrollBar::sub-page:horizontal { background: transparent; }
 
-
-/* ============================================
-   PLAYER
-============================================ */
-
-QWidget#playerPanel {
-    background-color: @PLAYER_SURFACE;
-    border-radius: 18px;
-}
+/* ===== PLAYER ===== */
+QWidget#playerPanel { background-color: @PLAYER_SURFACE; }
 
 QWidget#albumArt {
     background-color: transparent;
     border-radius: 14px;
 }
 
-QWidget#trackInfo {
-    background-color: transparent;
-}
-
-QWidget#playbackControls {
-    background-color: transparent;
-}
+QWidget#trackInfo { background-color: transparent; }
+QWidget#playbackControls { background-color: transparent; }
 
 QToolButton {
     background-color: transparent;
@@ -293,17 +217,10 @@ QToolButton:pressed {
     color: @TEXT_PRIMARY;
 }
 
-QToolButton:checked {
-    color: @ACCENT_SECONDARY;
-}
+QToolButton:checked { color: @ACCENT_SECONDARY; }
+QToolButton:disabled { color: @TEXT_INACTIVE; }
 
-QToolButton:disabled {
-    color: @TEXT_INACTIVE;
-}
-
-QWidget#seekBar {
-    background-color: transparent;
-}
+QWidget#seekBar { background-color: transparent; }
 
 QLabel#seekCurrentTime,
 QLabel#seekTotalTime {
@@ -312,25 +229,17 @@ QLabel#seekTotalTime {
     font-weight: 500;
 }
 
-
-/* ============================================
-   LYRICS
-============================================ */
-
-QWidget#lyricsPanel {
-    background-color: transparent;
-}
+/* ===== LYRICS ===== */
+QWidget#lyricsPanel { background-color: transparent; }
 
 QScrollArea#lyricsScrollArea {
     background-color: transparent;
     border: none;
 }
 
-QWidget#lyricsList {
-    background-color: transparent;
-}
+QWidget#lyricsList { background-color: transparent; }
 
-/* Inactiva */
+/* inactiva */
 QWidget#lyricItem {
     background-color: transparent;
     border-radius: 14px;
@@ -340,95 +249,58 @@ QWidget#lyricItem {
 QWidget#lyricItem QLabel#lyric {
     background-color: transparent;
     color: @TEXT_MUTED;
-    font-size: 30px;
-    font-weight: 500;
+    font-family: @LYRIC_FONTS;
+    font-size: @LYRIC_SIZE;
+    font-weight: @LYRIC_WEIGHT;
 }
 
-/* Inactiva + hover */
-QWidget#lyricItem[hovered="true"] {
-    background-color: @SURFACE_HOVER;
-}
+/* inactiva + hover */
+QWidget#lyricItem[hovered="true"] { background-color: @SURFACE_HOVER; }
+QWidget#lyricItem[hovered="true"] QLabel#lyric { color: @TEXT_PRIMARY; }
 
-QWidget#lyricItem[hovered="true"] QLabel#lyric {
-    color: @TEXT_PRIMARY;
-}
-
-/* Activa (va después para ganar al hover) */
-QWidget#lyricItem[active="true"] {
-    background-color: transparent;
-}
+/* activa (después, para ganar al hover) */
+QWidget#lyricItem[active="true"] { background-color: transparent; }
 
 QWidget#lyricItem[active="true"] QLabel#lyric {
     color: @ACCENT_SECONDARY;
-    font-size: 50px;
-    font-weight: 800;
+    font-family: @LYRIC_ACTIVE_FONTS;
+    font-size: @LYRIC_ACTIVE_SIZE;
+    font-weight: @LYRIC_ACTIVE_WEIGHT;
 }
 
-/* ============================================
-   LIBRARY
-============================================ */
-
-QWidget#libraryPanel {
-    background-color: transparent;
-}
+/* ===== LIBRARY ===== */
+QWidget#libraryPanel { background-color: transparent; }
 
 QScrollArea#libraryScrollArea {
     background-color: transparent;
     border: none;
 }
 
-QWidget#libraryList {
-    background-color: transparent;
-}
+QWidget#libraryList { background-color: transparent; }
 
 QWidget#trackItem {
     background-color: transparent;
     border-radius: 14px;
 }
 
-QWidget#trackItem:hover {
-    background-color: @SURFACE_HOVER;
-}
+QWidget#trackItem:hover { background-color: @SURFACE_HOVER; }
+QWidget#trackItem QLabel { background-color: transparent; }
 
-QWidget#trackItem QLabel {
-    background-color: transparent;
-}
-
-
-/* ============================================
-   CONFIGURATION
-============================================ */
-
-QWidget#configView {
-    background-color: @CONTENT_SURFACE;
-}
-
-QWidget#configHeader {
-    background-color: @CONTENT_SURFACE;
-}
-
-QWidget#configSections {
-    background-color: transparent;
-}
+/* ===== CONFIGURATION ===== */
+QWidget#configView { background-color: @CONTENT_SURFACE; }
+QWidget#configHeader { background-color: transparent; }
+QWidget#configSections { background-color: transparent; }
 
 QScrollArea#configScrollArea {
     background-color: transparent;
     border: none;
 }
 
-QWidget#libraryPathEntry {
-    background-color: transparent;
-}
+QWidget#libraryPathEntry { background-color: transparent; }
+QWidget#themeSection { background-color: transparent; }
+QWidget#colorEntry { background-color: transparent; }
 
-QWidget#themeSection {
-    background-color: transparent;
-}
-
-QWidget#colorEntry {
-    background-color: transparent;
-}
-
-/* Muestras de color: círculo de 30x30, sin borde */
+/* muestras de color: círculo 30x30, sin borde */
 QWidget#colorEntry QPushButton {
     border: none;
     border-radius: 15px;

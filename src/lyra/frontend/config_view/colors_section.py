@@ -12,22 +12,17 @@ from PySide6.QtWidgets import (
 from ..rules import AppRules, AppWidget
 
 
-class ThemeSection(AppWidget):
+class ColorsSection(AppWidget):
     transparency_changed = Signal(int)
     color_changed = Signal(str, str)
 
-    def __init__(self, theme: dict, parent: QWidget | None = None) -> None:
+    def __init__(self, colors: dict, parent: QWidget | None = None) -> None:
         super().__init__("themeSection", parent)
-        self.title = AppRules.subtitle("Theme")
+        self.title = AppRules.subtitle("Colors")
         self.transparency_label = AppRules.label("Background Transparency")
-        transparency = max(
-            0,
-            min(100, int(theme.get("transparency", 85))),
-        )
+        transparency = max(0, min(100, int(colors.get("transparency", 85))))
         self.transparency_slider = AppRules.slider(
-            minimum=0,
-            maximum=100,
-            value=transparency,
+            minimum=0, maximum=100, value=transparency
         )
         self.transparency_value = AppRules.label(f"{transparency}%")
         self.transparency_value.setFixedWidth(48)
@@ -43,7 +38,7 @@ class ThemeSection(AppWidget):
         self.colors_layout = QVBoxLayout()
         self.colors_layout.setContentsMargins(0, 0, 0, 0)
         self.colors_layout.setSpacing(12)
-        colors = {key: value for key, value in theme.items() if key != "transparency"}
+        colors = {key: value for key, value in colors.items() if key != "transparency"}
         for key, color in colors.items():
             name = key.replace("_", " ").title()
             entry = self._create_color_entry(key, name, color)

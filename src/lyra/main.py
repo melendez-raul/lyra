@@ -37,7 +37,9 @@ def main() -> int:
         QIcon(str(Path(__file__).parent / "frontend/assets/Lyra-logo.png"))
     )
     config = Config.load()
-    theme_manager = ThemeManager(app=app, theme=config.theme.to_dict())
+    theme_manager = ThemeManager(
+        app=app, colors=config.colors.to_dict(), fonts=config.fonts.to_dict()
+    )
     theme_manager.apply()
     music_dir = resolve_library(config)
     if music_dir is None:

@@ -1,6 +1,5 @@
 import json
-import re
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, field, fields
 from typing import Literal
 
 
@@ -87,8 +86,18 @@ class Playlist:
         return self.current
 
 
+FONT_FAMILY = ["Inter", "Segoe UI", "Noto Sans", "sans-serif"]
+
+
 @dataclass
-class Theme:
+class Font:
+    size: int
+    weight: int = 400
+    fonts: list[str] = field(default_factory=lambda: list(FONT_FAMILY))
+
+
+@dataclass
+class Colors:
     transparency: int = 85
     app_background: str = "rgb(9, 9, 15)"
     content_surface: str = "rgb(20, 20, 31)"
@@ -105,34 +114,33 @@ class Theme:
     accent_secondary: str = "rgb(167, 139, 250)"
     accent_tertiary: str = "rgb(109, 40, 217)"
 
-    def to_dict(self) -> dict[str, str | int]:
-        return {
-            "transparency": self.transparency,
-            "app_background": self.app_background,
-            "content_surface": self.content_surface,
-            "player_surface": self.player_surface,
-            "surface": self.surface,
-            "surface_hover": self.surface_hover,
-            "border_subtle": self.border_subtle,
-            "title_color": self.title_color,
-            "text_primary": self.text_primary,
-            "text_secondary": self.text_secondary,
-            "text_muted": self.text_muted,
-            "text_inactive": self.text_inactive,
-            "accent_primary": self.accent_primary,
-            "accent_secondary": self.accent_secondary,
-            "accent_tertiary": self.accent_tertiary,
-        }
+    def to_dict(self) -> dict:
+        return asdict(self)
 
     @classmethod
-    def from_dict(cls, data: dict) -> "Theme":
-        return cls(**data)
+    def from_dict(cls, data: dict) -> "Colors":
+        names = {f.name for f in fields(cls)}
+        return cls(**{k: v for k, v in data.items() if k in names})
 
-    def get_background(self, name: str) -> str:
-        color = getattr(self, name)
-        match = re.fullmatch(r"rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)", color)
-        if not match:
-            raise ValueError(f"Color RGB inválido: {color}")
-        r, g, b = map(int, match.groups())
-        alpha = round(max(0, min(100, self.transparency)) * 255 / 100)
-        return f"rgba({r}, {g}, {b}, {alpha})"
+
+@dataclass
+class Fonts:
+    title: Font = field(default_factory=lambda: Font(28, 700))
+    subtitle: Font = field(default_factory=lambda: Font(17, 600))
+    description: Font = field(default_factory=lambda: Font(14))
+    label: Font = field(default_factory=lambda: Font(14, 500))
+    lyric: Font = field(default_factory=lambda: Font(30, 500))
+    lyric_active: Font = field(default_factory=lambda: Font(50, 800))
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Fonts":
+        default = cls()
+        kwargs = {}
+        for f in fields(cls):
+            if isinstance(data.get(f.name), dict):
+                base = asdict(getattr(default, f.name))
+                kwargs[f.name] = Font(**{**base, **data[f.name]})
+        return cls(**kwargs)

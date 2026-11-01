@@ -43,3 +43,7 @@ class LibraryPanel(AppWidget):
             self.list_layout.removeWidget(item)
             item.deleteLater()
         self._items.clear()
+
+    def set_playlist(self, playlist: Playlist) -> None:
+        self._playlist = playlist
+        self.refresh()

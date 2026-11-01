@@ -1,4 +1,6 @@
 from backend import Config
+from backend.models import Font  # ajusta el import a donde tengas Font
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QScrollArea,
@@ -7,11 +9,14 @@ from PySide6.QtWidgets import (
 )
 
 from ..rules import AppRules, AppWidget
+from .colors_section import ColorsSection
+from .fonts_section import FontsSection
 from .library_path_entry import LibraryPathEntry
-from .theme_section import ThemeSection
 
 
 class ConfigPanel(AppWidget):
+    config_changed = Signal()
+
     def __init__(self, config: Config, parent: QWidget | None = None) -> None:
         super().__init__("configPanel", parent)
         self.config = config
@@ -25,7 +30,8 @@ class ConfigPanel(AppWidget):
         self.header_layout.addStretch()
         self.header_layout.addWidget(self.save_button)
         self.library_path = LibraryPathEntry(config.library_path)
-        self.theme_section = ThemeSection(config.theme.to_dict())
+        self.theme_section = ColorsSection(config.colors.to_dict())
+        self.fonts_section = FontsSection(config.fonts.to_dict())
         self.sections = QWidget()
         self.sections.setObjectName("configSections")
         self.sections_layout = QVBoxLayout(self.sections)
@@ -33,6 +39,7 @@ class ConfigPanel(AppWidget):
         self.sections_layout.setSpacing(28)
         self.sections_layout.addWidget(self.library_path)
         self.sections_layout.addWidget(self.theme_section)
+        self.sections_layout.addWidget(self.fonts_section)
         self.sections_layout.addStretch()
         self.scroll_area = QScrollArea()
         self.scroll_area.setObjectName("configScrollArea")
@@ -47,17 +54,23 @@ class ConfigPanel(AppWidget):
         self.library_path.path_changed.connect(self._on_library_path_changed)
         self.theme_section.transparency_changed.connect(self._on_transparency_changed)
         self.theme_section.color_changed.connect(self._on_color_changed)
+        self.fonts_section.font_changed.connect(self._on_font_changed)
         self.save_button.clicked.connect(self.save_config)
 
     def _on_library_path_changed(self, path: str) -> None:
         self.config.library_path = path
 
     def _on_transparency_changed(self, value: int) -> None:
-        self.config.theme.transparency = value
+        self.config.colors.transparency = value
 
     def _on_color_changed(self, key: str, color: str) -> None:
-        if hasattr(self.config.theme, key):
-            setattr(self.config.theme, key, color)
+        if hasattr(self.config.colors, key):
+            setattr(self.config.colors, key, color)
+
+    def _on_font_changed(self, key: str, font: dict) -> None:
+        if hasattr(self.config.fonts, key):
+            setattr(self.config.fonts, key, Font(**font))
 
     def save_config(self) -> None:
         self.config.save()
+        self.config_changed.emit()

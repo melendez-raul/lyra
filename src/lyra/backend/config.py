@@ -4,28 +4,30 @@ from pathlib import Path
 
 from PySide6.QtCore import QStandardPaths
 
-from .models import Theme
+from .models import Colors, Fonts
 
 
 @dataclass
 class Config:
     library_path: str | None = None
-    theme: Theme = field(default_factory=Theme)
+    colors: Colors = field(default_factory=Colors)
+    fonts: Fonts = field(default_factory=Fonts)
 
     def to_dict(self) -> dict:
         return {
             "library_path": self.library_path,
-            "theme": self.theme.to_dict(),
+            "colors": self.colors.to_dict(),
+            "fonts": self.fonts.to_dict(),
         }
 
     @classmethod
     def from_dict(cls, data: dict) -> "Config":
-        theme_data = data.get("theme")
+        colors = data.get("colors")
+        fonts = data.get("fonts")
         return cls(
-            theme=Theme.from_dict(theme_data)
-            if isinstance(theme_data, dict)
-            else Theme(),
             library_path=data.get("library_path"),
+            colors=Colors.from_dict(colors if isinstance(colors, dict) else {}),
+            fonts=Fonts.from_dict(fonts if isinstance(fonts, dict) else {}),
         )
 
     @staticmethod
