@@ -15,11 +15,10 @@ def resource_path(relative_path: str) -> Path:
 
 class ThemeManager:
     BACKGROUND_KEYS = {  # noqa: RUF012
-        "APP_BACKGROUND",
-        "CONTENT_SURFACE",
-        "PLAYER_SURFACE",
+        "CONTENT_BG",
+        "PLAYER_BG",
         "SURFACE",
-        "SURFACE_HOVER",
+        "HOVER",
     }
 
     def __init__(self, app: QApplication, colors: dict, fonts: dict) -> None:
@@ -30,7 +29,6 @@ class ThemeManager:
         self.assets_dir = resource_path("frontend/assets")
 
     def set_theme(self, colors: dict | None = None, fonts: dict | None = None) -> None:
-        """Actualiza los datos y reaplica."""
         if colors is not None:
             self.colors = colors
         if fonts is not None:

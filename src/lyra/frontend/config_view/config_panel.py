@@ -1,5 +1,5 @@
 from backend import Config
-from backend.models import Font  # ajusta el import a donde tengas Font
+from backend.models import Font
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QHBoxLayout,
@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ..rules import AppRules, AppWidget
+from ..rules import AppWidget, Elements
 from .colors_section import ColorsSection
 from .fonts_section import FontsSection
 from .library_path_entry import LibraryPathEntry
@@ -22,8 +22,8 @@ class ConfigPanel(AppWidget):
         self.config = config
         self.header = QWidget()
         self.header.setObjectName("configHeader")
-        self.title = AppRules.title("Configuración")
-        self.save_button = AppRules.button("Save Changes")
+        self.title = Elements.h1("Configuración")
+        self.save_button = Elements.button("Save Changes")
         self.header_layout = QHBoxLayout(self.header)
         self.header_layout.setContentsMargins(32, 28, 32, 0)
         self.header_layout.addWidget(self.title)

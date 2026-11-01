@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ..rules import AppRules, AppWidget
+from ..rules import AppWidget, Elements
 
 
 class ClickableSlider(QSlider):
@@ -75,8 +75,8 @@ class SeekBar(AppWidget):
         super().__init__("seekBar", parent)
         self._duration = 0.0
         self._seeking = False
-        self.current_time = AppRules.label("0:00")
-        self.total_time = AppRules.label("--:--")
+        self.current_time = Elements.label("0:00")
+        self.total_time = Elements.label("--:--")
         self.slider = ClickableSlider(Qt.Orientation.Horizontal)
         self.slider.setRange(0, 0)
         self.slider.setTracking(True)

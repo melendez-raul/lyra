@@ -1,7 +1,7 @@
 from PySide6.QtCore import QEvent, Qt
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 
-from ..rules import AppRules, AppWidget
+from ..rules import AppWidget, Elements
 
 
 class LyricItem(AppWidget):
@@ -17,7 +17,7 @@ class LyricItem(AppWidget):
         self.text = text
         self.is_active = False
         self.is_hovered = False
-        self.text_label = AppRules.lyric(text)
+        self.text_label = Elements.lyric(text)
         self.text_label.setWordWrap(True)
         self.text_label.setAttribute(
             Qt.WidgetAttribute.WA_TransparentForMouseEvents, True

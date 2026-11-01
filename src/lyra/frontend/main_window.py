@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from backend import Config, Controller
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -9,12 +11,15 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from .accents import pick_accent
 from .config_view import ConfigPanel
 from .library_view import LibraryPanel
 from .lyrics_view import LyricsPanel
 from .player_view import PlayerPanel
-from .rules import AppRules
+from .rules import Elements
 from .theme_manager import ThemeManager
+
+ASSETS_DIR = Path(__file__).resolve().parent / "assets" / "icons"
 
 
 class MainWindow(QMainWindow):
@@ -31,6 +36,7 @@ class MainWindow(QMainWindow):
         self.theme_manager = theme_manager
         self.config = config
         self._library_path = config.library_path
+        self._accent_name: str | None = None
 
         # ==================================
         # WINDOW CONFIGURATION
@@ -69,10 +75,14 @@ class MainWindow(QMainWindow):
         # NAVIGATION BUTTONS
         # ==================================
 
-        self.view_button = AppRules.button("Biblioteca")
+        self.view_button = Elements.button("Biblioteca")
         self.view_button.setCursor(Qt.CursorShape.PointingHandCursor)
 
-        self.config_button = AppRules.button("Config")
+        self.config_button = Elements.icon_button(
+            icon=ASSETS_DIR / "config.svg",
+            tooltip="Configuración",
+            icon_size=22,
+        )
         self.config_button.setCursor(Qt.CursorShape.PointingHandCursor)
 
         # ==================================
@@ -227,7 +237,7 @@ class MainWindow(QMainWindow):
     # ==================================
 
     def _on_track_changed(self, track) -> None:
-
+        self._apply_cover_theme(track)
         self.player_panel.set_track(track)
 
         if track is None:
@@ -240,10 +250,7 @@ class MainWindow(QMainWindow):
     # LYRICS SYNCHRONIZATION
     # ==================================
 
-    def update_lyrics_position(
-        self,
-        position: float,
-    ) -> None:
+    def update_lyrics_position(self, position: float) -> None:
 
         track = self.controller.current_track
 
@@ -272,11 +279,22 @@ class MainWindow(QMainWindow):
         self.update_lyrics_position(status.time)
 
     def _on_config_changed(self) -> None:
-        self.theme_manager.set_theme(
-            self.config.colors.to_dict(),
-            self.config.fonts.to_dict(),
-        )
+        self._accent_name = "__force__"
+        self._apply_cover_theme(self.controller.current_track)
         if self.config.library_path != self._library_path:
             self._library_path = self.config.library_path
             self.controller.load_library(self.config.library_path)  # pyright: ignore[reportArgumentType]
             self._initialize_player()
+
+    def _apply_cover_theme(self, track) -> None:
+        pick = None
+        if track and self.config.dynamic_colors:
+            pick = pick_accent(track.cover_color, self.config.accents)
+        name = pick[0] if pick else None
+        if name == self._accent_name:
+            return
+        self._accent_name = name
+        colors = self.config.colors.to_dict()
+        if pick:
+            colors.update(pick[1].to_dict())
+        self.theme_manager.set_theme(colors, self.config.fonts.to_dict())

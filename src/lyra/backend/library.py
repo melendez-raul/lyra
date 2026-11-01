@@ -9,6 +9,7 @@ from mutagen import MutagenError
 from mutagen.flac import FLAC, Picture
 
 from .models import Metadata, Track
+from .palette import COLOR_VERSION, extract_color
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +59,9 @@ class Library:
                     CREATE TABLE IF NOT EXISTS albums (
                         id INTEGER PRIMARY KEY,
                         title TEXT NOT NULL,
-                        cover_path TEXT
+                        cover_path TEXT,
+                        cover_color TEXT,
+                        color_version INTEGER DEFAULT 0
                     );
                     CREATE TABLE IF NOT EXISTS tracks (
                         id INTEGER PRIMARY KEY,
@@ -164,6 +167,27 @@ class Library:
                 timestamp += int(fraction) / (10 ** len(fraction))
             lyrics.append({"time": timestamp, "text": text})
         return json.dumps(lyrics, ensure_ascii=False, indent=4)
+
+    def _ensure_color(self, cover_path: str) -> None:
+        connection = None
+        try:
+            connection = self._connect()
+            with connection:
+                row = connection.execute(
+                    "SELECT id, color_version FROM albums WHERE cover_path = ?",
+                    (cover_path,),
+                ).fetchone()
+                if row is None or row["color_version"] == COLOR_VERSION:
+                    return
+                connection.execute(
+                    "UPDATE albums SET cover_color = ?, color_version = ? WHERE id = ?",
+                    (extract_color(cover_path), COLOR_VERSION, row["id"]),
+                )
+        except sql.Error as error:
+            raise LibraryError from error
+        finally:
+            if connection is not None:
+                connection.close()
 
     # ------------------------------------------------------------------
     # Base de datos
@@ -304,6 +328,7 @@ class Library:
                     t.lyrics,
                     al.title AS album,
                     al.cover_path,
+                    al.cover_color,
                     (
                         SELECT json_group_array(name)
                         FROM (
@@ -373,6 +398,8 @@ class Library:
         if picture is not None:
             metadata.cover_path = self._save_cover(picture, album_directory)
         self.insert(metadata)
+        if metadata.cover_path:
+            self._ensure_color(metadata.cover_path)
 
     @staticmethod
     def _safe_name(name: str) -> str:

@@ -1,46 +1,175 @@
-/* ===== GLOBAL ===== */
-QWidget {
-    color: @TEXT_PRIMARY;
-    font-family: "Inter", "Segoe UI", "Noto Sans", sans-serif;
-    font-size: 15px;
-}
+/* =====================================================
+   TEMA: todo lo que parsea ThemeManager (@TOKEN)
+   ===================================================== */
 
-QWidget#appBackground { background-color: @APP_BACKGROUND; }
-QWidget#contentContainer { background-color: @CONTENT_SURFACE; }
+/* ===== GLOBAL / FONDOS ===== */
+QWidget { color: @TEXT; }
+
+QWidget#playerPanel { background-color: @PLAYER_BG; }
+QWidget#contentContainer { background-color: @CONTENT_BG; }
 
 /* ===== TYPOGRAPHY ===== */
-QLabel#title {
-    color: @TITLE_COLOR;
-    font-family: @TITLE_FONTS;
-    font-size: @TITLE_SIZE;
-    font-weight: @TITLE_WEIGHT;
+QLabel#h1 {
+    color: @PRIMARY;
+    font-family: @H1_FONTS;
+    font-size: @H1_SIZE;
+    font-weight: @H1_WEIGHT;
 }
 
-QLabel#subtitle {
-    color: @TEXT_PRIMARY;
-    font-family: @SUBTITLE_FONTS;
-    font-size: @SUBTITLE_SIZE;
-    font-weight: @SUBTITLE_WEIGHT;
+QLabel#h2 {
+    color: @TEXT;
+    font-family: @H2_FONTS;
+    font-size: @H2_SIZE;
+    font-weight: @H2_WEIGHT;
 }
 
-QLabel#description {
-    color: @TEXT_SECONDARY;
-    font-family: @DESCRIPTION_FONTS;
-    font-size: @DESCRIPTION_SIZE;
-    font-weight: @DESCRIPTION_WEIGHT;
+QLabel#h3 {
+    color: @TEXT;
+    font-family: @H3_FONTS;
+    font-size: @H3_SIZE;
+    font-weight: @H3_WEIGHT;
 }
 
 QLabel#label {
-    color: @TEXT_SECONDARY;
+    color: @TEXT;
     font-family: @LABEL_FONTS;
     font-size: @LABEL_SIZE;
     font-weight: @LABEL_WEIGHT;
 }
 
+QLabel#info {
+    color: @INFO;
+    font-family: @INFO_FONTS;
+    font-size: @INFO_SIZE;
+    font-weight: @INFO_WEIGHT;
+}
+
+QLabel#inactive {
+    color: @INACTIVE;
+    font-family: @INACTIVE_FONTS;
+    font-size: @INACTIVE_SIZE;
+    font-weight: @INACTIVE_WEIGHT;
+}
+
 /* ===== BUTTONS ===== */
 QPushButton {
     background-color: @SURFACE;
-    color: @TEXT_PRIMARY;
+    color: @TEXT;
+}
+
+QPushButton:hover { background-color: @HOVER; }
+QPushButton:pressed { background-color: @TERTIARY; }
+QPushButton:focus { background-color: @HOVER; }
+QPushButton:checked { background-color: @PRIMARY; }
+
+QPushButton:disabled {
+    color: @INACTIVE;
+    background-color: @CONTENT_BG;
+}
+
+/* ===== INPUTS ===== */
+QLineEdit {
+    background-color: @SURFACE;
+    color: @TEXT;
+    selection-background-color: @PRIMARY;
+}
+
+QLineEdit:hover { border-color: @HOVER; }
+QLineEdit:focus { border: 1px solid @SECONDARY; }
+
+QLineEdit:read-only {
+    background-color: @SURFACE;
+    color: @TEXT;
+    border-color: @HOVER;
+}
+
+/* ===== SLIDERS ===== */
+QSlider#appSlider::groove:horizontal,
+QSlider#seekSlider::groove:horizontal,
+QSlider#clickableSlider::groove:horizontal {
+    background-color: @HOVER;
+}
+
+QSlider#appSlider::sub-page:horizontal,
+QSlider#seekSlider::sub-page:horizontal,
+QSlider#clickableSlider::sub-page:horizontal {
+    background-color: @PRIMARY;
+}
+
+QSlider#appSlider::handle:horizontal:pressed,
+QSlider#seekSlider::handle:horizontal:pressed,
+QSlider#clickableSlider::handle:horizontal:pressed {
+    background-color: @SECONDARY;
+}
+
+/* disabled: pseudo-elemento primero, estado después */
+QSlider#appSlider::sub-page:horizontal:disabled { background-color: @INACTIVE; }
+QSlider#appSlider::handle:horizontal:disabled { background-color: @INACTIVE; }
+
+/* ===== SCROLLBARS ===== */
+QScrollBar::handle:vertical { background: @HOVER; }
+QScrollBar::handle:vertical:hover { background: @INFO; }
+QScrollBar::handle:vertical:pressed { background: @SECONDARY; }
+
+QScrollBar::handle:horizontal { background: @HOVER; }
+QScrollBar::handle:horizontal:hover { background: @INFO; }
+QScrollBar::handle:horizontal:pressed { background: @SECONDARY; }
+
+/* ===== PLAYER ===== */
+QToolButton { color: @INFO; }
+
+QToolButton:hover {
+    background-color: @HOVER;
+    color: @TEXT;
+}
+
+QToolButton:pressed {
+    background-color: @TERTIARY;
+    color: @TEXT;
+}
+
+QToolButton:checked { color: @SECONDARY; }
+QToolButton:disabled { color: @INACTIVE; }
+
+QLabel#seekCurrentTime,
+QLabel#seekTotalTime { color: @INACTIVE; }
+
+/* ===== LYRICS ===== */
+QWidget#lyricItem QLabel#lyric {
+    color: @INFO;
+    font-family: @LYRIC_FONTS;
+    font-size: @LYRIC_SIZE;
+    font-weight: @LYRIC_WEIGHT;
+}
+
+/* inactiva + hover */
+QWidget#lyricItem[hovered="true"] { background-color: @HOVER; }
+QWidget#lyricItem[hovered="true"] QLabel#lyric { color: @TEXT; }
+
+/* activa (después del hover, para ganarle) */
+QWidget#lyricItem[active="true"] QLabel#lyric {
+    color: @SECONDARY;
+    font-family: @LYRIC_ACTIVE_FONTS;
+    font-size: @LYRIC_ACTIVE_SIZE;
+    font-weight: @LYRIC_ACTIVE_WEIGHT;
+}
+
+/* ===== LIBRARY ===== */
+QWidget#trackItem:hover { background-color: @HOVER; }
+
+
+/* =====================================================
+   ESTÁTICO: sin tokens, no depende del tema
+   ===================================================== */
+
+/* ===== GLOBAL ===== */
+QWidget {
+    font-family: "Inter", "Segoe UI", "Noto Sans", sans-serif;
+    font-size: 15px;
+}
+
+/* ===== BUTTONS (sin borde, pill) ===== */
+QPushButton {
     border: none;
     outline: none;
     border-radius: 18px;
@@ -49,34 +178,12 @@ QPushButton {
     font-weight: 600;
 }
 
-QPushButton:hover { background-color: @SURFACE_HOVER; }
-QPushButton:pressed { background-color: @ACCENT_TERTIARY; }
-QPushButton:focus { background-color: @SURFACE_HOVER; }
-QPushButton:checked { background-color: @ACCENT_PRIMARY; }
-
-QPushButton:disabled {
-    color: @TEXT_INACTIVE;
-    background-color: @CONTENT_SURFACE;
-}
-
 /* ===== INPUTS ===== */
 QLineEdit {
-    background-color: @SURFACE;
-    color: @TEXT_PRIMARY;
     border: 1px solid transparent;
     border-radius: 14px;
     padding: 11px 16px;
     font-size: 14px;
-    selection-background-color: @ACCENT_PRIMARY;
-}
-
-QLineEdit:hover { border-color: @BORDER_SUBTLE; }
-QLineEdit:focus { border: 1px solid @ACCENT_SECONDARY; }
-
-QLineEdit:read-only {
-    color: @TEXT_SECONDARY;
-    background-color: transparent;
-    border-color: @BORDER_SUBTLE;
 }
 
 /* ===== SLIDERS (riel 6px · handle 10px, 14px hover) ===== */
@@ -91,7 +198,6 @@ QSlider#clickableSlider:horizontal {
 QSlider#appSlider::groove:horizontal,
 QSlider#seekSlider::groove:horizontal,
 QSlider#clickableSlider::groove:horizontal {
-    background-color: @BORDER_SUBTLE;
     border: none;
     height: 6px;
     border-radius: 3px;
@@ -100,7 +206,6 @@ QSlider#clickableSlider::groove:horizontal {
 QSlider#appSlider::sub-page:horizontal,
 QSlider#seekSlider::sub-page:horizontal,
 QSlider#clickableSlider::sub-page:horizontal {
-    background-color: @ACCENT_PRIMARY;
     border-radius: 3px;
 }
 
@@ -133,16 +238,11 @@ QSlider#clickableSlider::handle:horizontal:hover {
 QSlider#appSlider::handle:horizontal:pressed,
 QSlider#seekSlider::handle:horizontal:pressed,
 QSlider#clickableSlider::handle:horizontal:pressed {
-    background-color: @ACCENT_SECONDARY;
     width: 14px;
     height: 14px;
     margin: -4px 0;
     border-radius: 7px;
 }
-
-/* disabled: pseudo-elemento primero, estado después */
-QSlider#appSlider::sub-page:horizontal:disabled { background-color: @TEXT_INACTIVE; }
-QSlider#appSlider::handle:horizontal:disabled { background-color: @TEXT_INACTIVE; }
 
 /* ===== SCROLLBARS ===== */
 QScrollBar:vertical {
@@ -152,13 +252,9 @@ QScrollBar:vertical {
 }
 
 QScrollBar::handle:vertical {
-    background: @BORDER_SUBTLE;
     border-radius: 2px;
     min-height: 36px;
 }
-
-QScrollBar::handle:vertical:hover { background: @TEXT_MUTED; }
-QScrollBar::handle:vertical:pressed { background: @ACCENT_SECONDARY; }
 
 QScrollBar::add-line:vertical,
 QScrollBar::sub-line:vertical { height: 0; }
@@ -173,13 +269,9 @@ QScrollBar:horizontal {
 }
 
 QScrollBar::handle:horizontal {
-    background: @BORDER_SUBTLE;
     border-radius: 2px;
     min-width: 36px;
 }
-
-QScrollBar::handle:horizontal:hover { background: @TEXT_MUTED; }
-QScrollBar::handle:horizontal:pressed { background: @ACCENT_SECONDARY; }
 
 QScrollBar::add-line:horizontal,
 QScrollBar::sub-line:horizontal { width: 0; }
@@ -188,8 +280,6 @@ QScrollBar::add-page:horizontal,
 QScrollBar::sub-page:horizontal { background: transparent; }
 
 /* ===== PLAYER ===== */
-QWidget#playerPanel { background-color: @PLAYER_SURFACE; }
-
 QWidget#albumArt {
     background-color: transparent;
     border-radius: 14px;
@@ -200,31 +290,16 @@ QWidget#playbackControls { background-color: transparent; }
 
 QToolButton {
     background-color: transparent;
-    color: @TEXT_SECONDARY;
     border: none;
     outline: none;
     border-radius: 20px;
     padding: 10px;
 }
 
-QToolButton:hover {
-    background-color: @SURFACE_HOVER;
-    color: @TEXT_PRIMARY;
-}
-
-QToolButton:pressed {
-    background-color: @ACCENT_TERTIARY;
-    color: @TEXT_PRIMARY;
-}
-
-QToolButton:checked { color: @ACCENT_SECONDARY; }
-QToolButton:disabled { color: @TEXT_INACTIVE; }
-
 QWidget#seekBar { background-color: transparent; }
 
 QLabel#seekCurrentTime,
 QLabel#seekTotalTime {
-    color: @TEXT_MUTED;
     font-size: 13px;
     font-weight: 500;
 }
@@ -246,27 +321,10 @@ QWidget#lyricItem {
     border-left: 4px solid transparent;
 }
 
-QWidget#lyricItem QLabel#lyric {
-    background-color: transparent;
-    color: @TEXT_MUTED;
-    font-family: @LYRIC_FONTS;
-    font-size: @LYRIC_SIZE;
-    font-weight: @LYRIC_WEIGHT;
-}
+QWidget#lyricItem QLabel#lyric { background-color: transparent; }
 
-/* inactiva + hover */
-QWidget#lyricItem[hovered="true"] { background-color: @SURFACE_HOVER; }
-QWidget#lyricItem[hovered="true"] QLabel#lyric { color: @TEXT_PRIMARY; }
-
-/* activa (después, para ganar al hover) */
+/* activa (después del hover, que está arriba, para ganarle) */
 QWidget#lyricItem[active="true"] { background-color: transparent; }
-
-QWidget#lyricItem[active="true"] QLabel#lyric {
-    color: @ACCENT_SECONDARY;
-    font-family: @LYRIC_ACTIVE_FONTS;
-    font-size: @LYRIC_ACTIVE_SIZE;
-    font-weight: @LYRIC_ACTIVE_WEIGHT;
-}
 
 /* ===== LIBRARY ===== */
 QWidget#libraryPanel { background-color: transparent; }
@@ -283,11 +341,9 @@ QWidget#trackItem {
     border-radius: 14px;
 }
 
-QWidget#trackItem:hover { background-color: @SURFACE_HOVER; }
 QWidget#trackItem QLabel { background-color: transparent; }
 
 /* ===== CONFIGURATION ===== */
-QWidget#configView { background-color: @CONTENT_SURFACE; }
 QWidget#configHeader { background-color: transparent; }
 QWidget#configSections { background-color: transparent; }
 
@@ -298,7 +354,9 @@ QScrollArea#configScrollArea {
 
 QWidget#libraryPathEntry { background-color: transparent; }
 QWidget#themeSection { background-color: transparent; }
+QWidget#fontsSection { background-color: transparent; }
 QWidget#colorEntry { background-color: transparent; }
+QWidget#fontEntry { background-color: transparent; }
 
 /* muestras de color: círculo 30x30, sin borde */
 QWidget#colorEntry QPushButton {

@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ..rules import AppRules, AppWidget
+from ..rules import AppWidget, Elements
 
 
 class ColorsSection(AppWidget):
@@ -18,13 +18,13 @@ class ColorsSection(AppWidget):
 
     def __init__(self, colors: dict, parent: QWidget | None = None) -> None:
         super().__init__("themeSection", parent)
-        self.title = AppRules.subtitle("Colors")
-        self.transparency_label = AppRules.label("Background Transparency")
+        self.title = Elements.h2("Colors")
+        self.transparency_label = Elements.label("Background Transparency")
         transparency = max(0, min(100, int(colors.get("transparency", 85))))
-        self.transparency_slider = AppRules.slider(
+        self.transparency_slider = Elements.slider(
             minimum=0, maximum=100, value=transparency
         )
-        self.transparency_value = AppRules.label(f"{transparency}%")
+        self.transparency_value = Elements.label(f"{transparency}%")
         self.transparency_value.setFixedWidth(48)
         self.transparency_value.setAlignment(
             Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
@@ -60,8 +60,8 @@ class ColorsSection(AppWidget):
     def _create_color_entry(self, key: str, name: str, color: str) -> QWidget:
         container = QWidget()
         container.setObjectName("colorEntry")
-        label = AppRules.label(name)
-        button = AppRules.button("")
+        label = Elements.label(name)
+        button = Elements.button("")
         button.setFixedSize(30, 30)
         button.setCursor(Qt.CursorShape.PointingHandCursor)
         button.setStyleSheet(f"background-color: {color};")

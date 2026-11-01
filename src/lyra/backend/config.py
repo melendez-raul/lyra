@@ -4,29 +4,36 @@ from pathlib import Path
 
 from PySide6.QtCore import QStandardPaths
 
-from .models import Colors, Fonts
+from .models import Accents, Colors, Fonts
 
 
 @dataclass
 class Config:
     library_path: str | None = None
     colors: Colors = field(default_factory=Colors)
+    dynamic_colors: bool = False
+    accents: Accents = field(default_factory=Accents)
     fonts: Fonts = field(default_factory=Fonts)
 
     def to_dict(self) -> dict:
         return {
             "library_path": self.library_path,
             "colors": self.colors.to_dict(),
+            "dynamic_colors": self.dynamic_colors,
+            "accents": self.accents.to_dict(),
             "fonts": self.fonts.to_dict(),
         }
 
     @classmethod
     def from_dict(cls, data: dict) -> "Config":
         colors = data.get("colors")
+        accents = data.get("accents")
         fonts = data.get("fonts")
         return cls(
             library_path=data.get("library_path"),
             colors=Colors.from_dict(colors if isinstance(colors, dict) else {}),
+            dynamic_colors=bool(data.get("dynamic_colors", False)),
+            accents=Accents.from_dict(accents if isinstance(accents, dict) else {}),
             fonts=Fonts.from_dict(fonts if isinstance(fonts, dict) else {}),
         )
 

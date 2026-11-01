@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ..rules import AppRules, AppWidget
+from ..rules import AppWidget, Elements
 
 
 class LibraryPathEntry(AppWidget):
@@ -16,13 +16,10 @@ class LibraryPathEntry(AppWidget):
         self, library_path: str | None = None, parent: QWidget | None = None
     ) -> None:
         super().__init__("libraryPathEntry", parent)
-        self.title = AppRules.subtitle("Library Path")
-        self.path_input = AppRules.input(library_path or "")
+        self.title = Elements.h2("Library Path")
+        self.path_input = Elements.input(library_path or "")
         self.path_input.setReadOnly(True)
-        self.path_input.setPlaceholderText(
-            "No se ha seleccionado" if library_path == "" else library_path or ""
-        )
-        self.browse_button = AppRules.button("Buscar")
+        self.browse_button = Elements.button("Buscar")
         self.path_layout = QHBoxLayout()
         self.path_layout.setContentsMargins(0, 0, 0, 0)
         self.path_layout.setSpacing(8)
@@ -37,7 +34,7 @@ class LibraryPathEntry(AppWidget):
 
     def select_directory(self) -> None:
         directory = QFileDialog.getExistingDirectory(
-            self, "Selecciona la biblioteca", self.path_input.text()
+            self, "Selecciona un directorio", self.path_input.text()
         )
         if not directory:
             return

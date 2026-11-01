@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from pathlib import Path
 
 from PySide6.QtCore import QSize, Qt
@@ -13,27 +14,23 @@ from PySide6.QtWidgets import (
 )
 
 
-class AppRules:
-    # ==================================
-    # LABELS
-    # ==================================
-
+class Elements:
     @staticmethod
-    def title(text: str) -> QLabel:
+    def h1(text: str) -> QLabel:
         widget = QLabel(text)
-        widget.setObjectName("title")
+        widget.setObjectName("h1")
         return widget
 
     @staticmethod
-    def subtitle(text: str) -> QLabel:
+    def h2(text: str) -> QLabel:
         widget = QLabel(text)
-        widget.setObjectName("subtitle")
+        widget.setObjectName("h2")
         return widget
 
     @staticmethod
-    def description(text: str) -> QLabel:
+    def h3(text: str) -> QLabel:
         widget = QLabel(text)
-        widget.setObjectName("description")
+        widget.setObjectName("h3")
         return widget
 
     @staticmethod
@@ -43,14 +40,22 @@ class AppRules:
         return widget
 
     @staticmethod
+    def info(text: str) -> QLabel:
+        widget = QLabel(text)
+        widget.setObjectName("info")
+        return widget
+
+    @staticmethod
+    def inactive(text: str) -> QLabel:
+        widget = QLabel(text)
+        widget.setObjectName("inactive")
+        return widget
+
+    @staticmethod
     def lyric(text: str) -> QLabel:
         widget = QLabel(text)
         widget.setObjectName("lyric")
         return widget
-
-    # ==================================
-    # BUTTONS
-    # ==================================
 
     @staticmethod
     def button(text: str) -> QPushButton:
@@ -83,9 +88,7 @@ class AppRules:
 
     @staticmethod
     def toggle_button(
-        text: str,
-        object_name: str = "toggleButton",
-        checked: bool = False,
+        text: str, object_name: str = "toggleButton", checked: bool = False
     ) -> QPushButton:
         widget = QPushButton(text)
         widget.setObjectName(object_name)
@@ -93,10 +96,6 @@ class AppRules:
         widget.setChecked(checked)
         widget.setCursor(Qt.CursorShape.PointingHandCursor)
         return widget
-
-    # ==================================
-    # INPUTS
-    # ==================================
 
     @staticmethod
     def input(placeholder: str = "") -> QLineEdit:
@@ -118,10 +117,6 @@ class AppRules:
         widget.setValue(value)
         return widget
 
-    # ==================================
-    # CONTAINERS
-    # ==================================
-
     @staticmethod
     def card() -> QFrame:
         widget = QFrame()
@@ -134,3 +129,10 @@ class AppWidget(QWidget):
         super().__init__(parent)
         self.setObjectName(object_name)
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+
+
+@dataclass
+class Standards:
+    l1_spacing = ()
+    l2_spacing = ()
+    l3_spacing = ()

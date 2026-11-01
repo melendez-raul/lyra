@@ -1,19 +1,19 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QVBoxLayout, QWidget
 
-from ..rules import AppRules, AppWidget
+from ..rules import AppWidget, Elements
 
 
 class TrackInfo(AppWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__("trackInfo", parent)
-        self.title = AppRules.title("")
+        self.title = Elements.h1("")
         self.title.setWordWrap(True)
         self.title.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.artist = AppRules.subtitle("")
+        self.artist = Elements.h2("")
         self.artist.setWordWrap(True)
         self.artist.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.album = AppRules.description("")
+        self.album = Elements.h3("")
         self.album.setWordWrap(True)
         self.album.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.main_layout = QVBoxLayout(self)

@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ..rules import AppRules, AppWidget
+from ..rules import AppWidget, Elements
 
 
 class TrackItem(AppWidget):
@@ -23,16 +23,16 @@ class TrackItem(AppWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_Hover, True)
         self.setMouseTracking(True)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        self.artwork = AppRules.label("")
+        self.artwork = Elements.label("")
         self.artwork.setFixedSize(75, 75)
         self.artwork.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.artwork.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
         self._set_cover(track.cover_path)
-        self.title = AppRules.label(track.title)
+        self.title = Elements.label(track.title)
         self.title.setWordWrap(True)
-        self.artist = AppRules.description(", ".join(track.artist))
+        self.artist = Elements.info(", ".join(track.artist))
         self.artist.setWordWrap(True)
-        self.album = AppRules.description(track.album)
+        self.album = Elements.info(track.album)
         self.album.setWordWrap(True)
         for widget in (self.title, self.artist, self.album):
             widget.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)

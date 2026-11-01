@@ -4,7 +4,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QHBoxLayout
 
-from ..rules import AppRules, AppWidget
+from ..rules import AppWidget, Elements
 
 ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets" / "icons"
 
@@ -16,19 +16,19 @@ class PlaybackControls(AppWidget):
 
     def __init__(self, parent=None) -> None:
         super().__init__("playbackControls", parent)
-        self.previous_button = AppRules.icon_button(
+        self.previous_button = Elements.icon_button(
             ASSETS_DIR / "prev.svg",
             tooltip="Anterior",
             icon_size=22,
             object_name="previousButton",
         )
-        self.play_button = AppRules.icon_button(
+        self.play_button = Elements.icon_button(
             ASSETS_DIR / "play.svg",
             tooltip="Reproducir",
-            icon_size=26,
+            icon_size=50,
             object_name="playButton",
         )
-        self.next_button = AppRules.icon_button(
+        self.next_button = Elements.icon_button(
             ASSETS_DIR / "next.svg",
             tooltip="Siguiente",
             icon_size=22,

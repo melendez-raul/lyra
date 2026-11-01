@@ -2,7 +2,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtGui import QIntValidator
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 
-from ..rules import AppRules, AppWidget
+from ..rules import AppWidget, Elements
 
 
 class FontsSection(AppWidget):
@@ -10,7 +10,7 @@ class FontsSection(AppWidget):
 
     def __init__(self, fonts: dict, parent: QWidget | None = None) -> None:
         super().__init__("fontsSection", parent)
-        self.title = AppRules.subtitle("Fonts")
+        self.title = Elements.h2("Fonts")
         self.font_entries: dict = {}
         self.fonts_layout = QVBoxLayout()
         self.fonts_layout.setContentsMargins(0, 0, 0, 0)
@@ -31,17 +31,17 @@ class FontsSection(AppWidget):
         container.setObjectName("fontEntry")
         container.font_data = dict(font)  # pyright: ignore[reportAttributeAccessIssue]
 
-        size_input = AppRules.input("px")
+        size_input = Elements.input("px")
         size_input.setValidator(QIntValidator(6, 200, size_input))
         size_input.setFixedWidth(72)
         size_input.setText(str(font["size"]))
 
-        weight_input = AppRules.input("100-900")
+        weight_input = Elements.input("100-900")
         weight_input.setValidator(QIntValidator(100, 900, weight_input))
         weight_input.setFixedWidth(88)
         weight_input.setText(str(font["weight"]))
 
-        fonts_input = AppRules.input("Inter, Segoe UI, sans-serif")
+        fonts_input = Elements.input("Inter, Segoe UI, sans-serif")
         fonts_input.setText(", ".join(font["fonts"]))
 
         container.size_input = size_input  # pyright: ignore[reportAttributeAccessIssue]
@@ -51,17 +51,17 @@ class FontsSection(AppWidget):
         row = QHBoxLayout()
         row.setContentsMargins(0, 0, 0, 0)
         row.setSpacing(12)
-        row.addWidget(AppRules.description("Size"))
+        row.addWidget(Elements.info("Size"))
         row.addWidget(size_input)
-        row.addWidget(AppRules.description("Weight"))
+        row.addWidget(Elements.info("Weight"))
         row.addWidget(weight_input)
-        row.addWidget(AppRules.description("Fonts"))
+        row.addWidget(Elements.info("Fonts"))
         row.addWidget(fonts_input, 1)
 
         layout = QVBoxLayout(container)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(8)
-        layout.addWidget(AppRules.label(name))
+        layout.addWidget(Elements.label(name))
         layout.addLayout(row)
 
         for field in (size_input, weight_input, fonts_input):
